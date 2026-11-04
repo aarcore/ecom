@@ -1,0 +1,18 @@
+# Development overlay: verbose SQL and permissive security for local work.
+spring:
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:ecom}
+  flyway:
+    clean-disabled: false
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+ecom:
+  jwt:
+    secret: ecom-platform-dev-secret-key-change-me-32bytes-min
+
+logging:
+  level:
+    com.ait: DEBUG

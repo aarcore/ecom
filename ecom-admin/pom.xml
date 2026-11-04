@@ -2,13 +2,28 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>ecom</artifactId>
         <groupId>com.ait</groupId>
+        <artifactId>ecom</artifactId>
         <version>1.0.0</version>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
 
     <artifactId>ecom-admin</artifactId>
+    <name>ecom-admin</name>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.ait</groupId>
+            <artifactId>ecom-mall-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.ait</groupId>
+            <artifactId>ecom-logging</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.ait</groupId>
+            <artifactId>ecom-kits-oss</artifactId>
+        </dependency>
+    </dependencies>
 </project>

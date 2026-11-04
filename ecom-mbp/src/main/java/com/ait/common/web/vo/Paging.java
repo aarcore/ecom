@@ -1,27 +1,34 @@
 package com.ait.common.web.vo;
 
-import com.alibaba.fastjson.annotation.JSONField;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
+import com.ait.common.api.PageResult;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Alias kept for compatibility with the original module API; new code should
+ * use {@link PageResult}.
+ */
 public class Paging<T> implements Serializable {
-    private static final long serialVersionUID = -1683800405530086022L;
 
-    @ApiModelProperty("Total Count")
-    @JSONField(name = "total")
-    @JsonProperty("total")
+    private static final long serialVersionUID = 1L;
+
     private long total = 0;
-
-    @ApiModelProperty("Data List")
-    @JSONField(name = "records")
-    @JsonProperty("records")
     private List<T> records = Collections.emptyList();
 
-    public Paging() {}
+    public Paging() {
+    }
+
+    public Paging(long total, List<T> records) {
+        this.total = total;
+        this.records = records;
+    }
+
+    public static <T> Paging<T> from(PageResult<T> page) {
+        return new Paging<>(page.getTotal(), page.getRecords());
+    }
 
     public long getTotal() {
         return total;
@@ -37,10 +44,5 @@ public class Paging<T> implements Serializable {
 
     public void setRecords(List<T> records) {
         this.records = records;
-    }
-
-    @Override
-    public String toString() {
-        return "Paging{" + "total=" + total + ", records=" + records + '}';
     }
 }

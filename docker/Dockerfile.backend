@@ -1,0 +1,63 @@
+# ---- build stage -------------------------------------------------------
+FROM docker.m.daocloud.io/library/maven:3.9-eclipse-temurin-17 AS build
+WORKDIR /workspace
+
+# Dependency layer: only the poms are copied first so this layer stays cached
+# until a dependency actually changes.
+COPY pom.xml .
+COPY ecom-common/pom.xml ecom-common/
+COPY ecom-mbp/pom.xml ecom-mbp/
+COPY ecom-kits/pom.xml ecom-kits/
+COPY ecom-kits/ecom-kits-redis/pom.xml ecom-kits/ecom-kits-redis/
+COPY ecom-kits/ecom-kits-oss/pom.xml ecom-kits/ecom-kits-oss/
+COPY ecom-mall/pom.xml ecom-mall/
+COPY ecom-mall/ecom-mall-common/pom.xml ecom-mall/ecom-mall-common/
+COPY ecom-mall/ecom-mall-core/pom.xml ecom-mall/ecom-mall-core/
+COPY ecom-logging/pom.xml ecom-logging/
+COPY ecom-admin/pom.xml ecom-admin/
+COPY ecom-app/pom.xml ecom-app/
+COPY ecom-boot/pom.xml ecom-boot/
+COPY ecom-generator/pom.xml ecom-generator/
+
+RUN mvn -B -q -pl ecom-boot -am dependency:go-offline -DskipTests || true
+
+COPY ecom-common/src ecom-common/src
+COPY ecom-mbp/src ecom-mbp/src
+COPY ecom-kits/ecom-kits-redis/src ecom-kits/ecom-kits-redis/src
+COPY ecom-kits/ecom-kits-oss/src ecom-kits/ecom-kits-oss/src
+COPY ecom-mall/ecom-mall-common/src ecom-mall/ecom-mall-common/src
+COPY ecom-mall/ecom-mall-core/src ecom-mall/ecom-mall-core/src
+COPY ecom-logging/src ecom-logging/src
+COPY ecom-admin/src ecom-admin/src
+COPY ecom-app/src ecom-app/src
+COPY ecom-boot/src ecom-boot/src
+
+RUN mvn -B -q -pl ecom-boot -am package -DskipTests
+
+# ---- runtime stage -----------------------------------------------------
+FROM docker.m.daocloud.io/library/eclipse-temurin:17-jre
+
+RUN groupadd -r ecom && useradd -r -g ecom -d /app -s /sbin/nologin ecom \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends curl tzdata \
+    && rm -rf /var/lib/apt/lists/* \
+    && ln -snf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
+    && echo "Asia/Shanghai" > /etc/timezone
+
+WORKDIR /app
+
+COPY --from=build /workspace/ecom-boot/target/ecom-server.jar /app/ecom-server.jar
+
+RUN mkdir -p /app/data/uploads && chown -R ecom:ecom /app
+
+USER ecom
+EXPOSE 8080
+
+ENV JAVA_OPTS="-XX:MaxRAMPercentage=75 -XX:+UseG1GC -Djava.security.egd=file:/dev/./urandom" \
+    SPRING_PROFILES_ACTIVE=prod \
+    TZ=Asia/Shanghai
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=90s --retries=5 \
+    CMD curl -fsS http://127.0.0.1:8080/actuator/health || exit 1
+
+ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar /app/ecom-server.jar"]

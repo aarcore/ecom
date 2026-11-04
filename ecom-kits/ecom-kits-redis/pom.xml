@@ -4,12 +4,28 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>ecom</artifactId>
         <groupId>com.ait</groupId>
+        <artifactId>ecom-kits</artifactId>
         <version>1.0.0</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>ecom-kits-redis</artifactId>
-    <packaging>pom</packaging>
+    <name>ecom-kits-redis</name>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.ait</groupId>
+            <artifactId>ecom-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-pool2</artifactId>
+            <version>${commons-pool2.version}</version>
+        </dependency>
+    </dependencies>
 </project>

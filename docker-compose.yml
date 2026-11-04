@@ -1,0 +1,169 @@
+name: ecom
+
+# ---------------------------------------------------------------------------
+#  Single-host deployment for the ecom platform.
+#
+#    docker compose up -d      start everything (builds on first run)
+#    docker compose logs -f    follow logs
+#    docker compose down       stop, keeping data volumes
+#    docker compose down -v    stop and wipe postgres/redis data
+#
+#  Ports on the host (override with an .env file):
+#    8080  Spring Boot API + Swagger
+#    8081  admin console
+#    8082  customer client (H5 + mini program webview)
+#    8083  customer client (desktop web)
+#    5432  PostgreSQL
+#    6379  Redis
+# ---------------------------------------------------------------------------
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: ecom-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-ecom}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      # deterministic collation so ORDER BY is stable across environments
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C"
+      TZ: Asia/Shanghai
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-ecom}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    networks:
+      - ecom-net
+
+  redis:
+    image: redis:7-alpine
+    container_name: ecom-redis
+    restart: unless-stopped
+    command: >
+      redis-server
+      --appendonly yes
+      --maxmemory 256mb
+      --maxmemory-policy allkeys-lru
+      ${REDIS_PASSWORD:+--requirepass ${REDIS_PASSWORD}}
+    environment:
+      TZ: Asia/Shanghai
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+    networks:
+      - ecom-net
+
+  backend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.backend
+    image: ecom/backend:latest
+    container_name: ecom-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-ecom}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      JWT_SECRET: ${JWT_SECRET:-ecom-platform-dev-secret-key-change-me-32bytes-min}
+      # encrypts payment channel credentials at rest; set it in production
+      ECOM_PAY_SECRET: ${ECOM_PAY_SECRET:-}
+      # absolute URL payment providers call back on
+      ECOM_PUBLIC_URL: ${ECOM_PUBLIC_URL:-http://localhost:18080}
+      STORAGE_TYPE: ${STORAGE_TYPE:-local}
+      STORAGE_PUBLIC_URL: /uploads
+      STORAGE_LOCAL_ROOT: /app/data/uploads
+      SERVER_PORT: 8080
+      TZ: Asia/Shanghai
+    ports:
+      - "${API_PORT:-8080}:8080"
+    volumes:
+      # uploaded images survive container rebuilds and are served by nginx
+      - uploads-data:/app/data/uploads
+    networks:
+      - ecom-net
+
+  admin-web:
+    build:
+      context: ./ecom-admin-web
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE: /api
+    image: ecom/admin-web:latest
+    container_name: ecom-admin-web
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "${ADMIN_UI_PORT:-8081}:80"
+    networks:
+      - ecom-net
+
+  app-mini:
+    build:
+      context: ./ecom-app-mini
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE: /api
+    image: ecom/app-mini:latest
+    container_name: ecom-app-mini
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "${APP_MINI_PORT:-8082}:80"
+    networks:
+      - ecom-net
+
+  app-web:
+    build:
+      context: ./ecom-app-web
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE: /api
+    image: ecom/app-web:latest
+    container_name: ecom-app-web
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "${APP_WEB_PORT:-8083}:80"
+    networks:
+      - ecom-net
+
+volumes:
+  postgres-data:
+    name: ecom-postgres-data
+  redis-data:
+    name: ecom-redis-data
+  uploads-data:
+    name: ecom-uploads
+
+networks:
+  ecom-net:
+    name: ecom-net
+    driver: bridge

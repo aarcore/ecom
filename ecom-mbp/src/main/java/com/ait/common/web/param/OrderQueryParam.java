@@ -1,31 +1,26 @@
 package com.ait.common.web.param;
 
-import cn.hutool.core.collection.CollectionUtil;
-import com.baomidou.mybatisplus.core.metadata.OrderItem;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.util.Arrays;
-import java.util.List;
-
+/**
+ * Query object that also accepts sorting instructions.
+ */
 @Data
 @EqualsAndHashCode(callSuper = true)
-@ApiModel("可排序查询参数对象")
-public class OrderQueryParam extends QueryParam{
-    private static final long serialVersionUID = 57714391204790143L;
+@Schema(description = "Query parameters with sorting")
+public class OrderQueryParam extends QueryParam {
 
-    @ApiModelProperty(value = "Sort")
-    private List<OrderItem> orders;
+    private static final long serialVersionUID = 1L;
 
-    public void defaultOrder(OrderItem orderItem) {this.defaultOrders(Arrays.asList(orderItem));}
+    @Schema(description = "Column to order by, snake_case", example = "created_at")
+    private String sortField;
 
-    public void defaultOrders(List<OrderItem> orderItems) {
-        if (CollectionUtil.isEmpty(orderItems)) {
-            return;
-        }
+    @Schema(description = "asc or desc", example = "desc")
+    private String sortOrder = "desc";
 
-        this.orders = orderItems;
+    public boolean isAsc() {
+        return "asc".equalsIgnoreCase(sortOrder);
     }
 }

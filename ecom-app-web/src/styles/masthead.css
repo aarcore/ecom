@@ -1,0 +1,346 @@
+/* ==========================================================================
+   masthead — full-bleed hero carousel
+
+   This is the piece that has to feel "大气". Rules:
+     - image owns the full viewport width and ~92vh, edge to edge
+     - type sits on a hard scrim, not on a soft rounded card
+     - one slide is always visible; slides cross-fade plus a slow ken-burns
+       drift so the frame never feels static
+     - controls are thin and pinned to the edges, never floating in the middle
+   ========================================================================== */
+
+.masthead {
+  position: relative;
+  width: 100%;
+  height: clamp(520px, 88vh, 900px);
+  overflow: hidden;
+  background: var(--plate);
+  isolation: isolate;
+}
+
+.masthead-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.9s var(--ease);
+  pointer-events: none;
+  will-change: opacity;
+}
+
+.masthead-slide.active {
+  opacity: 1;
+  pointer-events: auto;
+  z-index: 1;
+}
+
+/* the image itself drifts slowly while its slide is active */
+.masthead-slide .art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.02);
+  transition: transform 8s linear;
+}
+
+.masthead-slide.active .art {
+  transform: scale(1.1);
+}
+
+/* two-layer scrim: a wash from the text edge, plus a floor wash.
+   Light theme lays warm paper over the bright plates and types in ink;
+   dark theme does the classic cinema falloff. */
+.masthead-slide::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+      100deg,
+      rgba(var(--scrim), var(--wash-1)) 0%,
+      rgba(var(--scrim), var(--wash-2)) 30%,
+      rgba(var(--scrim), var(--wash-3)) 56%,
+      rgba(var(--scrim), var(--wash-4)) 100%
+    ),
+    linear-gradient(0deg, rgba(var(--scrim-edge), var(--wash-floor)) 0%, rgba(var(--scrim-edge), 0) 40%);
+  z-index: 1;
+}
+
+.masthead-inner {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  max-width: var(--shell);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding-bottom: clamp(48px, 8vh, 96px);
+}
+
+/* ---- slide copy ---- */
+.masthead-copy {
+  max-width: 780px;
+  /* each child rises in with a stagger when its slide becomes active */
+}
+
+.masthead-slide.active .masthead-copy > * {
+  animation: masthead-rise 0.85s var(--ease-out) both;
+}
+
+.masthead-slide.active .masthead-copy > *:nth-child(1) {
+  animation-delay: 0.08s;
+}
+.masthead-slide.active .masthead-copy > *:nth-child(2) {
+  animation-delay: 0.18s;
+}
+.masthead-slide.active .masthead-copy > *:nth-child(3) {
+  animation-delay: 0.28s;
+}
+.masthead-slide.active .masthead-copy > *:nth-child(4) {
+  animation-delay: 0.38s;
+}
+
+@keyframes masthead-rise {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.masthead-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--flare);
+  margin-bottom: 20px;
+}
+
+.masthead-kicker::before {
+  content: '';
+  width: 34px;
+  height: 2px;
+  background: var(--flare);
+}
+
+/* the headline is the loudest thing on the page */
+.masthead-title {
+  font-family: var(--font-display);
+  font-size: clamp(46px, 7.2vw, 112px);
+  font-weight: 700;
+  line-height: 0.88;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  color: var(--on-photo);
+  margin: 0 0 22px;
+  text-shadow: var(--on-photo-shadow);
+}
+
+.masthead-title em {
+  font-style: normal;
+  color: var(--flare);
+  /* keep the accent legible over bright patches of the photo */
+  text-shadow: var(--on-photo-shadow);
+}
+
+.masthead-sub {
+  font-size: clamp(13px, 1.1vw, 15.5px);
+  line-height: 1.7;
+  color: var(--on-photo-2);
+  max-width: 46ch;
+  margin: 0 0 32px;
+  text-shadow: var(--on-photo-shadow-sm);
+}
+
+.masthead-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+/* ---- progress rail (right edge, vertical) ---- */
+.masthead-rail {
+  position: absolute;
+  right: var(--gutter);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.masthead-rail button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 26px;
+  color: var(--on-photo-3);
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  transition: color 0.24s var(--ease);
+}
+
+.masthead-rail button .bar {
+  width: 26px;
+  height: 2px;
+  background: currentColor;
+  transition: width 0.42s var(--ease), background 0.24s;
+}
+
+.masthead-rail button.on {
+  color: var(--on-photo);
+}
+
+.masthead-rail button.on .bar {
+  width: 54px;
+  background: var(--flare);
+}
+
+.masthead-rail button:hover {
+  color: var(--on-photo-2);
+}
+
+/* ---- bottom bar: scroll cue + counter ---- */
+.masthead-foot {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 3;
+  border-top: 1px solid var(--on-photo-line);
+  background: linear-gradient(0deg, rgba(var(--scrim-edge), 0.82), rgba(var(--scrim-edge), 0));
+}
+
+.masthead-foot .inner {
+  max-width: var(--shell);
+  margin: 0 auto;
+  padding: 16px var(--gutter);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.masthead-counter {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  color: var(--on-photo-3);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.masthead-counter strong {
+  color: var(--on-photo);
+  font-size: 16px;
+}
+
+.scroll-cue {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--on-photo-3);
+}
+
+.scroll-cue .line {
+  width: 44px;
+  height: 1px;
+  background: var(--on-photo-line);
+  position: relative;
+  overflow: hidden;
+}
+
+.scroll-cue .line::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--flare);
+  transform: translateX(-100%);
+  animation: cue 2.4s ease-in-out infinite;
+}
+
+@keyframes cue {
+  0% {
+    transform: translateX(-100%);
+  }
+  60%,
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* ---- responsive ---- */
+@media (max-width: 960px) {
+  .masthead {
+    height: clamp(480px, 74vh, 700px);
+  }
+  .masthead-rail {
+    display: none;
+  }
+  .masthead-slide::before {
+    background: linear-gradient(
+      180deg,
+      rgba(var(--scrim), 0.06) 0%,
+      rgba(var(--scrim), 0.82) 56%,
+      rgba(var(--scrim), 0.98) 100%
+    );
+  }
+  .masthead-inner {
+    justify-content: flex-end;
+    padding-bottom: 78px;
+  }
+  .masthead-title {
+    font-size: clamp(44px, 10vw, 72px);
+  }
+}
+
+@media (max-width: 640px) {
+  .masthead {
+    height: clamp(440px, 68vh, 560px);
+  }
+  .masthead-title {
+    font-size: clamp(38px, 11.5vw, 54px);
+    margin-bottom: 14px;
+  }
+  .masthead-sub {
+    font-size: 13px;
+    margin-bottom: 22px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .masthead-actions .btn {
+    flex: 1;
+    min-width: 0;
+    padding: 0 18px;
+    font-size: 14px;
+  }
+  .masthead-foot .inner {
+    padding: 12px var(--gutter);
+  }
+  .scroll-cue {
+    display: none;
+  }
+}

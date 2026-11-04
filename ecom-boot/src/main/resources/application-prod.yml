@@ -1,0 +1,23 @@
+# Stricter overlay for the Docker/production profile.
+spring:
+  flyway:
+    clean-disabled: true
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
+
+management:
+  endpoint:
+    health:
+      show-details: never
+
+ecom:
+  jobs:
+    close-unpaid-ms: 300000
+    auto-complete-ms: 3600000
+
+logging:
+  level:
+    root: WARN
+    com.ait: INFO
