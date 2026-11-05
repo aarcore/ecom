@@ -4,13 +4,28 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>ecom</artifactId>
         <groupId>com.ait</groupId>
+        <artifactId>ecom</artifactId>
         <version>1.0.0</version>
     </parent>
 
     <artifactId>ecom-generator</artifactId>
-    <packaging>pom</packaging>
+    <name>ecom-generator</name>
 
-
+    <dependencies>
+        <dependency>
+            <groupId>com.ait</groupId>
+            <artifactId>ecom-mbp</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-generator</artifactId>
+            <version>${mybatis-plus.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>velocity-engine-core</artifactId>
+            <version>2.3</version>
+        </dependency>
+    </dependencies>
 </project>

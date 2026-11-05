@@ -1,31 +1,26 @@
-# 忽略匹配下列规则的Git 提交 V2.1.0
 ### gradle ###
 .gradle
 /build/
-!gradle/wrapper/gradle-wrapper.jar
-
-### STS ###
-.settings/
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-bin/
 
 ### IntelliJ IDEA ###
-.idea
+.idea/
 *.iws
 *.iml
 *.ipr
 rebel.xml
 
+### Eclipse / STS ###
+.settings/
+.apt_generated
+.classpath
+.factorypath
+.project
+.springBeans
+bin/
+
 ### NetBeans ###
 nbproject/private/
-build/
 nbbuild/
-dist/
 nbdist/
 .nb-gradle/
 
@@ -33,32 +28,44 @@ nbdist/
 target/
 *.war
 *.ear
-*.zip
-*.tar
-*.tar.gz
 *.jar
+pom.xml.versionsBackup
 
-### logs ####
+### logs ###
 /logs/
 *.log
 
-### temp ignore ###
+### runtime data ###
+# uploads written by the backend when running outside Docker
+data/
+upload/
+gen_code
+
+### docker ###
+# local port/secret overrides; commit .env.example instead
+.env
+.env.local
+.env.*.local
+
+### frontend ###
+node_modules/
+dist/
+.vite/
+*.tsbuildinfo
+
+### editor ###
+.vscode/
+
+### temp ###
 *.cache
 *.diff
 *.patch
 *.tmp
 *.java~
 *.properties~
-*.xml~
 
-### system ignore ###
+### system ###
 .DS_Store
 Thumbs.db
 Servers
 .metadata
-upload
-gen_code
-
-### node ###
-node_modules
-pom.xml.versionsBackup

@@ -1,0 +1,487 @@
+/* ==========================================================================
+   site chrome — dark, sticky, hairline rules
+   ========================================================================== */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 120;
+  background: color-mix(in srgb, var(--canvas) 86%, transparent);
+  backdrop-filter: saturate(140%) blur(14px);
+  border-bottom: 1px solid var(--rule);
+  transition: background 0.3s var(--ease);
+}
+
+.site-header .bar {
+  height: var(--header-h);
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+/* brand: condensed caps with a hard accent slash */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  font-family: var(--font-display);
+  font-size: 23px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+  color: var(--text);
+  line-height: 1;
+}
+
+.brand .mark {
+  width: 30px;
+  height: 30px;
+  background: var(--flare);
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+  /* a slight skew reads as forward motion */
+  transform: skewX(-8deg);
+}
+
+.brand .mark span {
+  transform: skewX(8deg);
+  display: block;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  flex: 1;
+  min-width: 0;
+}
+
+.nav a {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  padding: 8px 0;
+  position: relative;
+  white-space: nowrap;
+  transition: color 0.18s;
+}
+
+.nav a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--flare);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.28s var(--ease);
+}
+
+.nav a:hover {
+  color: var(--text);
+}
+
+.nav a.active {
+  color: var(--text);
+}
+
+.nav a.active::after,
+.nav a:hover::after {
+  transform: scaleX(1);
+}
+
+.header-search {
+  flex: 0 1 280px;
+  min-width: 0;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.icon-btn {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  color: var(--text-2);
+  position: relative;
+  transition: color 0.16s;
+}
+
+.icon-btn:hover {
+  color: var(--text);
+}
+
+.icon-btn .count {
+  position: absolute;
+  top: 4px;
+  right: 3px;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  background: var(--flare);
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+  line-height: 1;
+}
+
+.account-btn {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  height: 42px;
+  padding: 0 12px 0 4px;
+  font-family: var(--font-display);
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--text-2);
+  transition: color 0.16s;
+}
+
+.account-btn:hover {
+  color: var(--text);
+}
+
+.account-btn .avatar {
+  width: 28px;
+  height: 28px;
+  object-fit: cover;
+  background: var(--surface-3);
+  flex-shrink: 0;
+  border: 1px solid var(--rule-strong);
+}
+
+/* dropdown */
+.account-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  min-width: 200px;
+  background: var(--surface);
+  border: 1px solid var(--rule-strong);
+  padding: 6px;
+  box-shadow: var(--shadow-lg);
+  z-index: 140;
+  animation: menu-in 0.18s var(--ease);
+}
+
+@keyframes menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+.account-menu a,
+.account-menu button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 13px;
+  color: var(--text-2);
+  text-align: left;
+  transition: background 0.14s, color 0.14s;
+}
+
+.account-menu a:hover,
+.account-menu button:hover {
+  background: var(--surface-3);
+  color: var(--text);
+}
+
+.account-menu .sep {
+  height: 1px;
+  background: var(--rule);
+  margin: 5px 0;
+}
+
+/* mobile */
+.mobile-menu-btn {
+  display: none;
+}
+
+.mobile-nav {
+  border-top: 1px solid var(--rule);
+  padding: 10px 0 18px;
+  display: grid;
+  gap: 0;
+}
+
+.mobile-nav a {
+  padding: 14px 2px;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  border-bottom: 1px solid var(--rule);
+}
+
+.mobile-nav a:last-child {
+  border-bottom: none;
+}
+
+@media (max-width: 960px) {
+  .site-header .bar {
+    gap: 16px;
+  }
+  .nav,
+  .header-search {
+    display: none;
+  }
+  .mobile-menu-btn {
+    display: grid;
+  }
+  .brand {
+    font-size: 20px;
+  }
+}
+
+/* ==========================================================================
+   footer
+   ========================================================================== */
+.site-footer {
+  margin-top: clamp(72px, 9vw, 120px);
+  border-top: 1px solid var(--rule);
+  padding: 64px 0 40px;
+  color: var(--text-3);
+  font-size: 13px;
+  background: var(--footer-bg);
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1.7fr repeat(3, 1fr);
+  gap: 44px;
+  margin-bottom: 52px;
+}
+
+.footer-grid h4 {
+  font-family: var(--font-display);
+  font-size: 12.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text);
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.footer-grid li + li {
+  margin-top: 10px;
+}
+
+.footer-grid a {
+  transition: color 0.16s;
+}
+
+.footer-grid a:hover {
+  color: var(--text);
+}
+
+.footer-note {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding-top: 28px;
+  border-top: 1px solid var(--rule);
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: var(--text-4);
+}
+
+.footer-brand-blurb {
+  max-width: 320px;
+  line-height: 1.75;
+  margin-top: 14px;
+  color: var(--text-3);
+}
+
+/* oversized outlined wordmark as footer sign-off */
+.footer-mark {
+  font-family: var(--font-display);
+  font-size: clamp(56px, 13vw, 180px);
+  font-weight: 700;
+  line-height: 0.78;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--rule-strong);
+  margin-top: 40px;
+  user-select: none;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+@media (max-width: 860px) {
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+  }
+}
+
+@media (max-width: 520px) {
+  .site-footer {
+    padding: 40px 0 28px;
+  }
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 26px;
+  }
+}
+
+/* ==========================================================================
+   theme toggle — a two-state switch that reads as a physical control
+   ========================================================================== */
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  height: 30px;
+  border: 1px solid var(--rule-strong);
+  padding: 2px;
+  flex-shrink: 0;
+}
+
+.theme-toggle button {
+  width: 30px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  color: var(--text-3);
+  transition: background 0.18s var(--ease), color 0.18s var(--ease);
+}
+
+.theme-toggle button.on {
+  background: var(--text);
+  color: var(--canvas);
+}
+
+.theme-toggle button:not(.on):hover {
+  color: var(--text);
+}
+
+@media (max-width: 960px) {
+  .theme-toggle {
+    height: 28px;
+  }
+  .theme-toggle button {
+    width: 27px;
+    height: 22px;
+  }
+}
+
+/* ==========================================================================
+   locale switch — same interaction language as the account menu beside it
+   ========================================================================== */
+.locale-switch {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.locale-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 30px;
+  padding: 0 8px;
+  border: 1px solid var(--rule-strong);
+  color: var(--text-2);
+  transition: color 0.16s var(--ease), border-color 0.16s var(--ease);
+}
+
+.locale-trigger:hover {
+  color: var(--text);
+  border-color: var(--text-3);
+}
+
+.locale-trigger .locale-tag {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1;
+}
+
+.locale-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 130;
+  min-width: 168px;
+  padding: 6px;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  box-shadow: var(--shadow-md);
+  animation: menu-in 0.16s var(--ease);
+}
+
+.locale-menu button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  padding: 9px 10px;
+  font-size: 13.5px;
+  color: var(--text-2);
+  text-align: left;
+  transition: background 0.14s, color 0.14s;
+}
+
+.locale-menu button:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.locale-menu button.on {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.locale-menu button .tag {
+  font-family: var(--font-display);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--text-4);
+}
+
+.locale-menu button.on .tag {
+  color: var(--flare);
+}
+
+/* inside the collapsed mobile nav the switch sits on its own row */
+.mobile-nav .mobile-locale {
+  padding: 14px 0 4px;
+  border-top: 1px solid var(--rule);
+  margin-top: 6px;
+}
+
+.mobile-nav .mobile-locale .locale-menu {
+  left: 0;
+  right: auto;
+}

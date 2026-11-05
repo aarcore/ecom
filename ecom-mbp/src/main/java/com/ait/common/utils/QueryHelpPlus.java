@@ -1,120 +1,139 @@
 package com.ait.common.utils;
 
-import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.util.ObjectUtil;
 import com.ait.annotation.Query;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
+/**
+ * Reflection driven query builder. Turns a populated query object into a
+ * {@link QueryWrapper} based on {@link Query} annotations.
+ */
 @Slf4j
-public class QueryHelpPlus {
-    public static <R, Q> QueryWrapper getPredicate(R obj, Q query) {
-        QueryWrapper<R> queryWrapper = new QueryWrapper<R>();
-        if (query == null) {
-            return queryWrapper;
-        }
+public final class QueryHelpPlus {
 
-        try{
-            List<Field> fields = getAllFields(query.getClass(), new ArrayList<>());
-            for (Field field : fields) {
-                boolean accessible = field.isAccessible();
-                field.setAccessible(true);
-                Query q = field.getAnnotation(Query.class);
-                if (q != null) {
-                    String propName = q.propName();
-                    String blurry = q.blurry();
-                    String attributeName = isBlank(propName) ? field.getName() : propName;
-                    attributeName = humpToUnderline(attributeName);
-                    Class<?> fieldType = field.getType();
-                    Object val = field.get(query);
-                    if (ObjectUtil.isNull(val) || "".equals(val)) {
-                        continue;
-                    }
-
-                    if (ObjectUtil.isNotEmpty(blurry)) {
-                        String[] blurrys = blurry.split(",");
-                        queryWrapper.and(wrapper -> {
-                            for (int i=0;i< blurrys.length;i++) {
-                                String column = humpToUnderline(blurrys[i]);
-                                wrapper.or();
-                                wrapper.like(column, val.toString());
-                            }
-                        });
-                        continue;
-                    }
-                    String finalAttributeName = attributeName;
-                    switch (q.type()) {
-                        case EQUAL:
-                            queryWrapper.eq(attributeName, val);
-                            break;
-                        case GREATER_THAN:
-                            queryWrapper.ge(finalAttributeName, val);
-                            break;
-                        case GREATER_THAN_NQ:
-                            queryWrapper.gt(finalAttributeName, val);
-                            break;
-                        case LESS_THAN:
-                            queryWrapper.le(finalAttributeName, val);
-                            break;
-                        case LESS_THAN_NQ:
-                            queryWrapper.lt(finalAttributeName, val);
-                            break;
-                        case INNER_LIKE:
-                            queryWrapper.like(finalAttributeName, val);
-                            break;
-                        case LEFT_LIKE:
-                            queryWrapper.likeLeft(finalAttributeName, val);
-                            break;
-                        case RIGHT_LIKE:
-                            queryWrapper.likeRight(finalAttributeName, val);
-                            break;
-                        case IN:
-                            if (CollUtil.isNotEmpty((Collection<Long>) val)) {
-                                queryWrapper.in(finalAttributeName, (Collection<Long>) val);
-                            }
-                            break;
-                        case NOT_EQUAL:
-                            queryWrapper.ne(finalAttributeName, val);
-                            break;
-                        case NOT_NULL:
-                            queryWrapper.isNotNull(finalAttributeName);
-                            break;
-                        case BETWEEN:
-                            List<Object> between = new ArrayList<>((List<Object>) val);
-                            queryWrapper.between(finalAttributeName, between.get(0), between.get(1));
-                            break;
-                        case UNIX_TIMESTAMP:
-                            List<Object> UNIX_TIMESTAMP = new ArrayList<>((List<Object>)val);
-                            if(!UNIX_TIMESTAMP.isEmpty()){
-                                SimpleDateFormat fm = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                                Date time1 = fm.parse(UNIX_TIMESTAMP.get(0).toString());
-                                Date time2 = fm.parse(UNIX_TIMESTAMP.get(1).toString());
-                                queryWrapper.between(finalAttributeName, time1, time2);
-                            }
-                            break;
-                        default:
-                            break;
-                    }
-                }
-                field.setAccessible(accessible);
-            }
-        }catch (Exception e){
-            log.error(e.getMessage(), e);
-        }
-
-        return queryWrapper;
+    private QueryHelpPlus() {
     }
 
-    private static boolean isBlank(final CharSequence cs) {
-        int strLen;
-        if (cs == null || (strLen = cs.length()) == 0) {
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public static <R, Q> QueryWrapper<R> getPredicate(R root, Q query) {
+        QueryWrapper<R> wrapper = new QueryWrapper<>();
+        if (query == null) {
+            return wrapper;
+        }
+
+        for (Field field : getAllFields(query.getClass())) {
+            Query annotation = field.getAnnotation(Query.class);
+            if (annotation == null) {
+                continue;
+            }
+            try {
+                field.setAccessible(true);
+                Object value = field.get(query);
+                if (isEmpty(value)) {
+                    continue;
+                }
+
+                String column = humpToUnderline(
+                        isBlank(annotation.propName()) ? field.getName() : annotation.propName());
+
+                String blurry = annotation.blurry();
+                if (!isBlank(blurry)) {
+                    String[] columns = blurry.split(",");
+                    wrapper.and(w -> {
+                        for (int i = 0; i < columns.length; i++) {
+                            if (i > 0) {
+                                w.or();
+                            }
+                            w.like(humpToUnderline(columns[i].trim()), value);
+                        }
+                    });
+                    continue;
+                }
+
+                switch (annotation.type()) {
+                    case EQUAL:
+                        wrapper.eq(column, value);
+                        break;
+                    case NOT_EQUAL:
+                        wrapper.ne(column, value);
+                        break;
+                    case GREATER_THAN:
+                        wrapper.ge(column, value);
+                        break;
+                    case GREATER_THAN_NQ:
+                        wrapper.gt(column, value);
+                        break;
+                    case LESS_THAN:
+                        wrapper.le(column, value);
+                        break;
+                    case LESS_THAN_NQ:
+                        wrapper.lt(column, value);
+                        break;
+                    case INNER_LIKE:
+                        wrapper.like(column, value);
+                        break;
+                    case LEFT_LIKE:
+                        wrapper.likeLeft(column, value);
+                        break;
+                    case RIGHT_LIKE:
+                        wrapper.likeRight(column, value);
+                        break;
+                    case IN:
+                        if (value instanceof Collection) {
+                            wrapper.in(column, (Collection<?>) value);
+                        }
+                        break;
+                    case NOT_IN:
+                        if (value instanceof Collection) {
+                            wrapper.notIn(column, (Collection<?>) value);
+                        }
+                        break;
+                    case IS_NULL:
+                        wrapper.isNull(column);
+                        break;
+                    case NOT_NULL:
+                        wrapper.isNotNull(column);
+                        break;
+                    case BETWEEN:
+                        if (value instanceof List && ((List<?>) value).size() == 2) {
+                            List<?> range = (List<?>) value;
+                            wrapper.between(column, range.get(0), range.get(1));
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            } catch (IllegalAccessException ex) {
+                log.warn("cannot read query field {}", field.getName(), ex);
+            }
+        }
+        return wrapper;
+    }
+
+    private static boolean isEmpty(Object value) {
+        if (value == null) {
             return true;
         }
-        for (int i = 0; i < strLen; i++) {
+        if (value instanceof CharSequence) {
+            return isBlank((CharSequence) value);
+        }
+        if (value instanceof Collection) {
+            return ((Collection<?>) value).isEmpty();
+        }
+        return false;
+    }
+
+    private static boolean isBlank(CharSequence cs) {
+        if (cs == null || cs.length() == 0) {
+            return true;
+        }
+        for (int i = 0; i < cs.length(); i++) {
             if (!Character.isWhitespace(cs.charAt(i))) {
                 return false;
             }
@@ -122,27 +141,31 @@ public class QueryHelpPlus {
         return true;
     }
 
-    private static List<Field> getAllFields(Class clazz, List<Field> fields) {
-        if (clazz != null) {
-            fields.addAll(Arrays.asList(clazz.getDeclaredFields()));
-            getAllFields(clazz.getSuperclass(), fields);
+    private static List<Field> getAllFields(Class<?> clazz) {
+        List<Field> fields = new ArrayList<>();
+        Class<?> current = clazz;
+        while (current != null && current != Object.class) {
+            fields.addAll(Arrays.asList(current.getDeclaredFields()));
+            current = current.getSuperclass();
         }
         return fields;
     }
 
-    /***
-     * Hump naming to underline naming
-     * @param para Hump-named strings
-     */
-    public static String humpToUnderline(String para) {
-        StringBuilder sb = new StringBuilder(para);
-        int temp = 0;//定位
-        if (!para.contains("_")) {
-            for (int i = 0; i < para.length(); i++) {
-                if (Character.isUpperCase(para.charAt(i))) {
-                    sb.insert(i + temp, "_");
-                    temp += 1;
+    /** camelCase -> snake_case */
+    public static String humpToUnderline(String name) {
+        if (name == null || name.contains("_")) {
+            return name;
+        }
+        StringBuilder sb = new StringBuilder(name.length() + 4);
+        for (int i = 0; i < name.length(); i++) {
+            char c = name.charAt(i);
+            if (Character.isUpperCase(c)) {
+                if (i > 0) {
+                    sb.append('_');
                 }
+                sb.append(Character.toLowerCase(c));
+            } else {
+                sb.append(c);
             }
         }
         return sb.toString();

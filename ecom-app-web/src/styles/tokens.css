@@ -1,0 +1,156 @@
+/* ==========================================================================
+   ecom-app-web · design tokens
+
+   Visual direction: "race-ready". This is a mountain bike store, not a
+   lifestyle boutique. The language is taken from race plates and trail
+   signage: condensed uppercase display type that reads like a bib number,
+   one hot accent, hard 0-radius edges, and full-bleed photography.
+
+   Two themes ship. Light is the default — a bright, paper-white showroom
+   that keeps the gear legible in daylight. Dark is the "night ride" variant.
+
+   Photography is shot twice: once on a charcoal plate, once on seamless
+   white. --plate is the surface a photo sits on, so it flips with the theme
+   and the light shots blend into the page instead of punching dark holes in
+   it. --scrim is the wash laid over full-bleed art, --on-photo is the type
+   that sits on top of it: warm paper + ink by day, night + white by night.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   light (default)
+   -------------------------------------------------------------------------- */
+:root {
+  color-scheme: light;
+
+  /* surfaces */
+  --canvas: #f7f7f5;
+  --surface: #ffffff;
+  --surface-2: #f1f1ee;
+  --surface-3: #e8e8e3;
+
+  /* text */
+  --text: #101114;
+  --text-2: #54585f;
+  --text-3: #868b93;
+  --text-4: #b4b8be;
+
+  /* lines */
+  --rule: #e2e2dc;
+  --rule-strong: #c9c9c1;
+
+  /* accent — race orange, identical across themes so the brand holds */
+  --flare: #f0431a;
+  --flare-hi: #d63a12;
+  --flare-dim: rgba(240, 67, 26, 0.1);
+
+  --volt: #7fb800;
+  --ok: #1f7a4d;
+  --gold: #9a6b0f;
+
+  /* photo plates — light shots sit on white, so the plate is white too */
+  --plate: #ffffff;
+  --plate-2: #f4f4f1;
+  --footer-bg: #efeee8;
+
+  /* overlays on full-bleed photography — paper wash, ink type */
+  --scrim: 250, 250, 248;
+  --scrim-edge: 236, 236, 230;
+  --on-photo: #101114;
+  --on-photo-2: rgba(16, 17, 20, 0.78);
+  --on-photo-3: rgba(16, 17, 20, 0.55);
+  --on-photo-line: rgba(16, 17, 20, 0.14);
+  /* type sits on a light plate, so it needs a paper halo, not a black one */
+  --on-photo-shadow: 0 2px 28px rgba(255, 255, 255, 0.9);
+  --on-photo-shadow-sm: 0 1px 14px rgba(255, 255, 255, 0.85);
+
+  /* hero wash — paper laid over a bright plate. It has to hold ink type at the
+     copy edge without bleaching the photograph, so it falls off fast. */
+  --wash-1: 0.94;
+  --wash-2: 0.8;
+  --wash-3: 0.26;
+  --wash-4: 0;
+  --wash-floor: 0.5;
+
+  /* type */
+  --font-display: 'Barlow Condensed', 'Oswald', 'Impact', 'PingFang SC',
+    'Microsoft YaHei', sans-serif;
+  --font-body: 'Barlow', -apple-system, BlinkMacSystemFont, 'Segoe UI Variable Text',
+    'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  /* metrics */
+  --shell: 1400px;
+  --gutter: 40px;
+  --header-h: 72px;
+  --radius: 0px;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --shadow-sm: 0 1px 2px rgba(16, 17, 20, 0.05);
+  --shadow-md: 0 12px 32px -14px rgba(16, 17, 20, 0.18);
+  --shadow-lg: 0 24px 60px -20px rgba(16, 17, 20, 0.24);
+}
+
+/* --------------------------------------------------------------------------
+   dark ("night ride")
+   -------------------------------------------------------------------------- */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --canvas: #0a0b0d;
+  --surface: #16181c;
+  --surface-2: #1c1f24;
+  --surface-3: #24272d;
+
+  --text: #f4f5f6;
+  --text-2: #b6bcc4;
+  --text-3: #7c848e;
+  --text-4: #4d545d;
+
+  --rule: rgba(255, 255, 255, 0.1);
+  --rule-strong: rgba(255, 255, 255, 0.22);
+
+  --flare: #ff4d1c;
+  --flare-hi: #ff6b3d;
+  --flare-dim: rgba(255, 77, 28, 0.14);
+
+  --volt: #c8f542;
+  --ok: #35c07a;
+  --gold: #d99422;
+
+  --plate: #14161a;
+  --plate-2: #1a1c21;
+  --footer-bg: #08090b;
+  --scrim: 6, 7, 9;
+  --scrim-edge: 10, 11, 13;
+  --on-photo: #ffffff;
+  --on-photo-2: rgba(255, 255, 255, 0.82);
+  --on-photo-3: rgba(255, 255, 255, 0.56);
+  --on-photo-line: rgba(255, 255, 255, 0.14);
+  --on-photo-shadow: 0 4px 48px rgba(0, 0, 0, 0.55);
+  --on-photo-shadow-sm: 0 1px 16px rgba(0, 0, 0, 0.5);
+
+  --wash-1: 0.92;
+  --wash-2: 0.74;
+  --wash-3: 0.28;
+  --wash-4: 0.06;
+  --wash-floor: 0.9;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 14px 36px -14px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 28px 64px -20px rgba(0, 0, 0, 0.7);
+}
+
+@media (max-width: 1100px) {
+  :root {
+    --gutter: 28px;
+    --header-h: 64px;
+  }
+}
+
+@media (max-width: 640px) {
+  :root {
+    --gutter: 18px;
+    --header-h: 58px;
+  }
+}

@@ -1,0 +1,243 @@
+/* ==========================================================================
+   product detail — split layout, image left, buy box right
+   ========================================================================== */
+.pdp {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr);
+  gap: clamp(28px, 4vw, 64px);
+  padding-top: 28px;
+  align-items: start;
+}
+
+/* gallery: thumbnail rail + large frame, hard edges */
+.gallery {
+  display: grid;
+  grid-template-columns: 84px 1fr;
+  gap: 10px;
+  align-items: start;
+}
+
+.gallery-rail {
+  display: grid;
+  gap: 10px;
+}
+
+.gallery-rail button {
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: var(--plate);
+  border: 1px solid transparent;
+  transition: border-color 0.18s;
+}
+
+.gallery-rail button.on {
+  border-color: var(--flare);
+}
+
+.gallery-rail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gallery-main {
+  aspect-ratio: 1 / 1;
+  background: var(--plate);
+  overflow: hidden;
+  position: relative;
+  border: 1px solid var(--rule);
+}
+
+.gallery-main img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ---- buy box ---- */
+.buybox {
+  position: sticky;
+  top: calc(var(--header-h) + 28px);
+}
+
+.buybox .brand-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--flare);
+  font-weight: 700;
+  margin-bottom: 14px;
+}
+
+.buybox .brand-line::before {
+  content: '';
+  width: 22px;
+  height: 2px;
+  background: var(--flare);
+}
+
+.buybox h1 {
+  font-size: clamp(30px, 3.4vw, 50px);
+  line-height: 0.94;
+  margin-bottom: 14px;
+  color: var(--text);
+}
+
+.buybox .subtitle {
+  color: var(--text-2);
+  font-size: 14.5px;
+  line-height: 1.7;
+  margin: 0 0 26px;
+}
+
+.buybox .price-line {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  padding: 22px 0;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: 28px;
+}
+
+.buybox .stock-note {
+  font-family: var(--font-display);
+  font-size: 12.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-left: auto;
+}
+
+.spec-block + .spec-block {
+  margin-top: 24px;
+}
+
+.spec-block .spec-head {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 11px;
+}
+
+.spec-block .spec-head strong {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.spec-block .spec-head span {
+  font-size: 12.5px;
+  color: var(--text-3);
+}
+
+.buy-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 32px;
+}
+
+.buy-actions .btn {
+  flex: 1;
+}
+
+.buy-meta {
+  margin-top: 28px;
+  padding-top: 22px;
+  border-top: 1px solid var(--rule);
+  display: grid;
+  gap: 12px;
+}
+
+.buy-meta .row-item {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  font-size: 12.5px;
+  color: var(--text-2);
+}
+
+.buy-meta svg {
+  color: var(--flare);
+  flex-shrink: 0;
+}
+
+/* ---- description ---- */
+.pdp-detail {
+  margin-top: clamp(56px, 7vw, 96px);
+  padding-top: 40px;
+  border-top: 1px solid var(--rule);
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 48px;
+}
+
+.pdp-detail h3 {
+  font-family: var(--font-display);
+  font-size: 13px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  font-weight: 700;
+}
+
+.pdp-detail .prose {
+  max-width: 68ch;
+  font-size: 15px;
+  line-height: 1.9;
+  color: var(--text-2);
+  white-space: pre-wrap;
+}
+
+.related-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2px;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+}
+
+@media (max-width: 900px) {
+  .pdp {
+    grid-template-columns: 1fr;
+    gap: 26px;
+    padding-top: 18px;
+  }
+  .gallery {
+    grid-template-columns: 1fr;
+  }
+  .gallery-rail {
+    order: 2;
+    grid-auto-flow: column;
+    grid-template-columns: none;
+    grid-auto-columns: 68px;
+    overflow-x: auto;
+  }
+  .buybox {
+    position: static;
+  }
+  .pdp-detail {
+    grid-template-columns: 1fr;
+    gap: 18px;
+    margin-top: 48px;
+  }
+  .related-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 520px) {
+  .buybox h1 {
+    font-size: 26px;
+  }
+  .buy-actions {
+    flex-direction: column;
+  }
+}

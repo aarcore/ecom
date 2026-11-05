@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.ait.common.config.CommonSecurityConfiguration,\
+com.ait.common.config.WebCommonConfiguration
