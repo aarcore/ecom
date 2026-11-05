@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Alert, Card, Col, Descriptions, Row, Space, Tag, Typography } from 'antd';
 import { CloudServerOutlined, DatabaseOutlined, DeploymentUnitOutlined } from '@ant-design/icons';
 import { api, withToast } from '@/api/client';
+import { PageHeader } from '@/components/PageHeader';
 
 interface StorageConfig {
   type: string;
@@ -22,12 +23,10 @@ export default function SettingsPage() {
 
   return (
     <div>
-      <div className="page-head">
-        <div>
-          <h1>存储与配置</h1>
-          <div className="sub">文件存储后端由环境变量 ecom.storage.* 控制</div>
-        </div>
-      </div>
+      <PageHeader
+        title="存储与配置"
+        description="文件存储后端由环境变量 ecom.storage.* 控制"
+      />
 
       <Row gutter={[16, 16]}>
         <Col xs={24} xl={12}>

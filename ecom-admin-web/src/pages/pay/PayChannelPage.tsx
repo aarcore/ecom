@@ -32,6 +32,7 @@ import {
   SafetyCertificateOutlined,
 } from '@ant-design/icons';
 import { api, withToast } from '@/api/client';
+import { PageHeader } from '@/components/PageHeader';
 
 /**
  * A configured channel as the backend returns it.
@@ -336,22 +337,20 @@ export default function PayChannelPage() {
 
   return (
     <div>
-      <div className="page-head">
-        <div>
-          <h1>支付渠道</h1>
-          <div className="sub">
-            管理商城可用的支付方式。渠道由后端适配器提供，启停与凭据均在此配置
-          </div>
-        </div>
-        <Space>
-          <Button icon={<ReloadOutlined />} onClick={load}>
-            刷新
-          </Button>
-          <Button type="primary" onClick={() => openModal()}>
-            新增渠道
-          </Button>
-        </Space>
-      </div>
+      <PageHeader
+        title="支付渠道"
+        description="管理商城可用的支付方式。渠道由后端适配器提供，启停与凭据均在此配置"
+        extra={
+    <>
+      <Button icon={<ReloadOutlined />} onClick={load}>
+                  刷新
+                </Button>
+                <Button type="primary" onClick={() => openModal()}>
+                  新增渠道
+                </Button>
+    </>
+        }
+      />
 
       <Alert
         type="info"
