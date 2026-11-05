@@ -57,10 +57,6 @@ public class ChannelSecretCodec {
         }
     }
 
-    public boolean isEnabled() {
-        return enabled;
-    }
-
     /** Encrypts a value; null and blanks pass through untouched. */
     public String encode(String plain) {
         if (plain == null || plain.isEmpty()) {
@@ -115,11 +111,6 @@ public class ChannelSecretCodec {
             log.error("failed to decrypt payment credential: {}", ex.getMessage());
             return null;
         }
-    }
-
-    /** True when the stored value looks encrypted. */
-    public boolean looksEncrypted(String stored) {
-        return stored != null && stored.startsWith(PREFIX);
     }
 
     private static byte[] sha256(String input) {

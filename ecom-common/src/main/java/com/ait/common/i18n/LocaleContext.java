@@ -31,9 +31,4 @@ public final class LocaleContext {
     public static void clear() {
         CURRENT.remove();
     }
-
-    /** True when the request wants translated content. */
-    public static boolean translating() {
-        return !get().isSource();
-    }
 }

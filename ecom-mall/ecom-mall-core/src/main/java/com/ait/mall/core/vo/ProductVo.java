@@ -67,9 +67,4 @@ public class ProductVo implements Serializable {
 
     @Schema(description = "Only present on detail responses")
     private List<SkuVo> skuList;
-
-    /** Derived label for the storefront ribbon. */
-    public String getPriceLabel() {
-        return price == null ? "" : price.stripTrailingZeros().toPlainString();
-    }
 }

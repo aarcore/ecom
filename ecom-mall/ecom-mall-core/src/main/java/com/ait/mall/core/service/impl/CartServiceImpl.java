@@ -232,14 +232,6 @@ public class CartServiceImpl implements CartService {
         return views;
     }
 
-    @Override
-    public List<OrderItemRequest> linesFromSku(Long skuId, int quantity) {
-        OrderItemRequest request = new OrderItemRequest();
-        request.setSkuId(skuId);
-        request.setQuantity(Math.max(1, quantity));
-        return Collections.singletonList(request);
-    }
-
     private Cart requireOwned(Long memberId, Long cartId) {
         Cart line = cartMapper.selectById(cartId);
         if (line == null || !memberId.equals(line.getMemberId())) {

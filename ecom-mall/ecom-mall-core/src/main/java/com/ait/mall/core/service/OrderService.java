@@ -55,12 +55,6 @@ public interface OrderService {
      */
     String settleFromChannel(com.ait.pay.core.PayNotification notification);
 
-    /**
-     * True when this channel transaction was already applied. Used to answer a
-     * replayed callback without touching the order twice.
-     */
-    boolean isChannelTradeSettled(String channelCode, String tradeNo);
-
     OrderVo cancel(Long memberId, String orderNo, String reason);
 
     OrderVo confirmReceipt(Long memberId, String orderNo);

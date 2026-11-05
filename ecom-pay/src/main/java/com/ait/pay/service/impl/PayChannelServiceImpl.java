@@ -179,20 +179,6 @@ public class PayChannelServiceImpl implements PayChannelService {
         channelMapper.deleteById(row.getId());
     }
 
-    @Override
-    public void applyCallbackUrls(String code, String notifyUrl, String returnUrl) {
-        PayChannelEntity row = findRow(code);
-        if (row == null) {
-            return;
-        }
-        PayChannelEntity patch = new PayChannelEntity();
-        patch.setId(row.getId());
-        patch.setNotifyUrl(notifyUrl);
-        patch.setReturnUrl(returnUrl);
-        patch.setUpdatedAt(LocalDateTime.now());
-        channelMapper.updateById(patch);
-    }
-
     // ------------------------------------------------------------------
     //  Helpers
     // ------------------------------------------------------------------

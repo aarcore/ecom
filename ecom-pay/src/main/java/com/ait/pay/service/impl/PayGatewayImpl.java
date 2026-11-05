@@ -84,10 +84,4 @@ public class PayGatewayImpl implements PayGateway {
         }
         return new Ack(channel.notificationAck(), channel.notificationAckContentType());
     }
-
-    @Override
-    public void assertAvailable(String channelCode) {
-        channelService.requireEnabled(channelCode);
-        registry.require(channelCode);
-    }
 }

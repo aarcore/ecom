@@ -63,13 +63,6 @@ public interface PayRecordWriteMapper {
                @Param("tradeNo") String tradeNo,
                @Param("rawStatus") String rawStatus);
 
-    @Update("""
-            update shop_pay_record
-               set status = 2, fail_reason = #{reason}, notify_at = now()
-             where order_no = #{orderNo} and status = 0
-            """)
-    int failPending(@Param("orderNo") String orderNo, @Param("reason") String reason);
-
     @Select("""
             select count(1) from shop_pay_record
              where channel_code = #{channelCode} and trade_no = #{tradeNo} and status = 1

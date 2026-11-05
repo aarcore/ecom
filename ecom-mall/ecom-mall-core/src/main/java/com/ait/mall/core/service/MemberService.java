@@ -16,8 +16,6 @@ public interface MemberService {
 
     LoginResult loginByWechat(MpLoginRequest request);
 
-    LoginResult profileLogin(Long memberId);
-
     MemberVo profile(Long memberId);
 
     MemberVo updateProfile(Long memberId, MemberVo request);

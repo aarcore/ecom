@@ -39,7 +39,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -382,11 +381,6 @@ public class OrderServiceImpl implements OrderService {
         }
         settle(order, notification.channelCode(), notification.tradeNo(), order.getMemberId());
         return orderNo;
-    }
-
-    @Override
-    public boolean isChannelTradeSettled(String channelCode, String tradeNo) {
-        return payRecordService.alreadySettled(channelCode, tradeNo);
     }
 
     /**

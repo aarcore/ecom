@@ -45,7 +45,4 @@ public interface PayGateway {
 
     record Ack(String body, String contentType) {
     }
-
-    /** Thrown when the channel exists but is switched off or unsupported. */
-    void assertAvailable(String channelCode);
 }

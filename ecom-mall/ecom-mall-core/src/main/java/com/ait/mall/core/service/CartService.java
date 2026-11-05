@@ -34,7 +34,4 @@ public interface CartService {
 
     /** Expands arbitrary sku+quantity requests into display rows. */
     List<CartItemVo> buildItemViews(List<OrderItemRequest> lines);
-
-    /** Buy-now single line count badge helper. */
-    List<OrderItemRequest> linesFromSku(Long skuId, int quantity);
 }
