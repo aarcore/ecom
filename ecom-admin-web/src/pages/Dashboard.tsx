@@ -1,5 +1,20 @@
 import { useEffect, useState } from 'react';
-import { Card, Col, Empty, Row, Skeleton, Space, Tag, Typography } from 'antd';
+import {
+  Avatar,
+  Card,
+  Col,
+  Empty,
+  Flex,
+  List,
+  Progress,
+  Row,
+  Segmented,
+  Skeleton,
+  Space,
+  Statistic,
+  Tag,
+  Typography,
+} from 'antd';
 import {
   ArrowDownOutlined,
   ArrowUpOutlined,
@@ -11,8 +26,10 @@ import {
 import { api, withToast } from '@/api/client';
 import type { DashboardData } from '@/types';
 
+const { Text } = Typography;
+
 const money = (n?: number) =>
-  `¥${(Number(n ?? 0)).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  `¥${Number(n ?? 0).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
 const compact = (n?: number) => {
   const value = Number(n ?? 0);
@@ -22,34 +39,51 @@ const compact = (n?: number) => {
   return String(value);
 };
 
-interface KpiProps {
+/**
+ * KPI tile built on AntD's Statistic.
+ *
+ * Statistic already handles the label/value/typography relationship and the
+ * count-up formatting hooks, so the bespoke `.kpi-tile` markup only existed to
+ * re-implement it. What Statistic cannot do — the icon chip in the corner and
+ * the coloured delta — is composed around it.
+ */
+function KpiTile({
+  label,
+  value,
+  delta,
+  hint,
+  icon,
+  tint,
+}: {
   label: string;
   value: string;
   delta?: number;
   hint?: string;
-  glyph: React.ReactNode;
+  icon: React.ReactNode;
   tint: string;
-}
-
-function Kpi({ label, value, delta, hint, glyph, tint }: KpiProps) {
+}) {
   const positive = (delta ?? 0) >= 0;
   return (
-    <div className="kpi-tile">
-      <div className="label">{label}</div>
-      <div className="value">{value}</div>
-      <div className={`delta ${delta === undefined ? '' : positive ? 'up' : 'down'}`}>
+    <Card className="soft-card kpi-card" bordered={false} styles={{ body: { padding: '15px 16px' } }}>
+      <Flex justify="space-between" align="flex-start" gap={8}>
+        <Statistic
+          title={<span style={{ fontSize: 12.5, color: 'var(--ink-soft)' }}>{label}</span>}
+          value={value}
+          valueStyle={{ fontSize: 23, fontWeight: 650, letterSpacing: '-0.02em', lineHeight: 1.25 }}
+        />
+        <span className="kpi-glyph" style={{ background: tint }}>
+          {icon}
+        </span>
+      </Flex>
+      <Flex align="center" gap={6} style={{ marginTop: 6, fontSize: 11.5 }}>
         {delta !== undefined && (
-          <>
-            {positive ? <ArrowUpOutlined /> : <ArrowDownOutlined />}
-            {Math.abs(delta).toFixed(1)}%
-          </>
+          <Text type={positive ? 'success' : 'danger'} style={{ fontSize: 11.5 }}>
+            {positive ? <ArrowUpOutlined /> : <ArrowDownOutlined />} {Math.abs(delta).toFixed(1)}%
+          </Text>
         )}
-        {hint && <span style={{ color: '#8b93a7' }}>{hint}</span>}
-      </div>
-      <div className="glyph" style={{ background: tint }}>
-        {glyph}
-      </div>
-    </div>
+        {hint && <Text type="secondary" style={{ fontSize: 11.5 }}>{hint}</Text>}
+      </Flex>
+    </Card>
   );
 }
 
@@ -111,7 +145,7 @@ function TrendChart({
             x2={width - padX}
             y1={padY + t * (height - padY * 2)}
             y2={padY + t * (height - padY * 2)}
-            stroke="#eef0f5"
+            stroke="#eef0f3"
             strokeWidth={1}
           />
         ))}
@@ -158,84 +192,61 @@ function TrendChart({
       </svg>
 
       {hover !== null && (
-        <div
-          style={{
-            position: 'absolute',
-            left: `${(points[hover].x / width) * 100}%`,
-            top: 8,
-            transform: 'translateX(-50%)',
-            background: '#fff',
-            border: '1px solid #eef0f5',
-            borderRadius: 10,
-            padding: '8px 12px',
-            boxShadow: '0 8px 24px rgba(16,24,40,0.1)',
-            fontSize: 12,
-            pointerEvents: 'none',
-            whiteSpace: 'nowrap',
-          }}
-        >
+        <div className="chart-tip" style={{ left: `${(points[hover].x / width) * 100}%` }}>
           <div style={{ fontWeight: 600, marginBottom: 4 }}>{points[hover].day}</div>
           <div>成交额 {money(Number(points[hover].gmv))}</div>
-          <div style={{ color: '#8b93a7' }}>订单 {points[hover].orders} 笔</div>
+          <Text type="secondary" style={{ fontSize: 12 }}>订单 {points[hover].orders} 笔</Text>
         </div>
       )}
 
-      <Space size={18} style={{ marginTop: 6, fontSize: 12, color: '#8b93a7' }}>
-        <span>
-          <span style={{ display: 'inline-block', width: 14, height: 3, background: '#2f54eb', borderRadius: 2, marginRight: 6 }} />
+      <Space size={18} style={{ marginTop: 6, fontSize: 12 }}>
+        <Text type="secondary" style={{ fontSize: 12 }}>
+          <span className="legend-line solid" />
           成交额
-        </span>
-        <span>
-          <span
-            style={{
-              display: 'inline-block',
-              width: 14,
-              height: 0,
-              borderTop: '2px dashed #8a5cff',
-              marginRight: 6,
-              verticalAlign: 'middle',
-            }}
-          />
+        </Text>
+        <Text type="secondary" style={{ fontSize: 12 }}>
+          <span className="legend-line dashed" />
           新增会员
-        </span>
+        </Text>
       </Space>
     </div>
   );
 }
 
-/** Horizontal ranked bars, used for category share and top products. */
+/**
+ * Ranked bars.
+ *
+ * Built on Progress rather than hand-drawn divs: Progress already owns the
+ * track, the fill, the transition and the accessible role, and its
+ * `percent` prop is exactly the ratio this chart computes by hand.
+ */
 function RankBars({ data }: { data: { name: string; value: number }[] }) {
   if (!data.length) return <Empty description="暂无数据" image={Empty.PRESENTED_IMAGE_SIMPLE} />;
   const max = Math.max(...data.map((d) => Number(d.value)), 1);
   return (
-    <div style={{ display: 'grid', gap: 12 }}>
+    <Flex vertical gap={12}>
       {data.map((d, i) => (
         <div key={`${d.name}-${i}`}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, marginBottom: 5 }}>
-            <span style={{ color: '#3d4557' }}>{d.name}</span>
-            <span className="muted">{compact(Number(d.value))}</span>
-          </div>
-          <div style={{ height: 7, background: '#f1f3f8', borderRadius: 6, overflow: 'hidden' }}>
-            <div
-              style={{
-                width: `${Math.max((Number(d.value) / max) * 100, 2)}%`,
-                height: '100%',
-                borderRadius: 6,
-                background: i === 0
-                  ? 'linear-gradient(90deg, #2f54eb, #6f8dff)'
-                  : 'linear-gradient(90deg, #a9bcf5, #cdd8fb)',
-                transition: 'width .4s ease',
-              }}
-            />
-          </div>
+          <Flex justify="space-between" style={{ fontSize: 13, marginBottom: 3 }}>
+            <Text>{d.name}</Text>
+            <Text type="secondary" style={{ fontSize: 12 }}>{compact(Number(d.value))}</Text>
+          </Flex>
+          <Progress
+            percent={Math.max((Number(d.value) / max) * 100, 2)}
+            showInfo={false}
+            size={['100%', 7]}
+            strokeColor={i === 0 ? '#2f54eb' : '#a9bcf5'}
+            trailColor="#f1f3f8"
+          />
         </div>
       ))}
-    </div>
+    </Flex>
   );
 }
 
 export default function DashboardPage() {
   const [data, setData] = useState<DashboardData | null>(null);
+  const [trendRange, setTrendRange] = useState<'7' | '14'>('14');
 
   useEffect(() => {
     withToast(() => api.get<DashboardData>('/admin/dashboard/overview')).then(setData);
@@ -250,76 +261,98 @@ export default function DashboardPage() {
   }
 
   const k = data.kpi;
+  // the payload carries the full window; the toggle only slices the tail so the
+  // chart can show a tighter period without another request
+  const trendSlice = trendRange === '7' ? data.trend.slice(-7) : data.trend;
+  const memberSlice = trendRange === '7' ? (data.memberTrend ?? []).slice(-7) : data.memberTrend;
 
   return (
-    <div>
-      <div className="page-head">
+    <Flex vertical gap={16}>
+      <Flex justify="space-between" align="flex-start" gap={16} wrap>
         <div>
-          <h1>数据看板</h1>
-          <div className="sub">近 30 天经营概览 · 数据实时汇总自 PostgreSQL</div>
+          <Typography.Title level={4} style={{ margin: 0, fontSize: 19 }}>
+            数据看板
+          </Typography.Title>
+          <Text type="secondary" style={{ fontSize: 12.5 }}>
+            近 30 天经营概览 · 数据实时汇总自 PostgreSQL
+          </Text>
         </div>
-        <Space>
-          <Tag color="green" bordered={false} style={{ borderRadius: 999, padding: '2px 10px' }}>
-            待发货 {k.pendingShipment}
-          </Tag>
-          <Tag color="gold" bordered={false} style={{ borderRadius: 999, padding: '2px 10px' }}>
-            待付款 {k.pendingPayment}
-          </Tag>
-          <Tag color="red" bordered={false} style={{ borderRadius: 999, padding: '2px 10px' }}>
-            退款中 {k.refunding}
-          </Tag>
+        <Space size={6}>
+          <Tag color="success" bordered={false} style={{ margin: 0 }}>待发货 {k.pendingShipment}</Tag>
+          <Tag color="warning" bordered={false} style={{ margin: 0 }}>待付款 {k.pendingPayment}</Tag>
+          <Tag color="error" bordered={false} style={{ margin: 0 }}>退款中 {k.refunding}</Tag>
         </Space>
-      </div>
+      </Flex>
 
-      <div className="kpi-grid" style={{ marginBottom: 16 }}>
-        <Kpi
-          label="今日成交额"
-          value={money(k.gmvToday)}
-          hint={`近 7 天 ${money(k.gmv7)}`}
-          glyph={<WalletOutlined style={{ color: '#2f54eb' }} />}
-          tint="#eef3ff"
-        />
-        <Kpi
-          label="近 7 天成交额"
-          value={money(k.gmv7)}
-          delta={k.gmvGrowth}
-          hint="较前 7 天"
-          glyph={<ShoppingCartOutlined style={{ color: '#0f9d58' }} />}
-          tint="#eafaf1"
-        />
-        <Kpi
-          label="近 7 天订单"
-          value={String(k.orders7)}
-          delta={k.ordersGrowth}
-          hint="较前 7 天"
-          glyph={<TrophyOutlined style={{ color: '#e08a1e' }} />}
-          tint="#fdf5e7"
-        />
-        <Kpi
-          label="客单价"
-          value={money(k.avgOrderValue)}
-          hint="近 30 天均值"
-          glyph={<WalletOutlined style={{ color: '#8a5cff' }} />}
-          tint="#f3efff"
-        />
-        <Kpi
-          label="会员总数"
-          value={compact(k.memberTotal)}
-          hint={`新增 ${k.memberNew7}`}
-          glyph={<TeamOutlined style={{ color: '#0c8ce9' }} />}
-          tint="#e9f6fe"
-        />
-      </div>
+      <Row gutter={[12, 12]}>
+        <Col xs={24} sm={12} xl={{ flex: "1 1 0" }}>
+          <KpiTile
+            label="今日成交额"
+            value={money(k.gmvToday)}
+            hint={`近 7 天 ${money(k.gmv7)}`}
+            icon={<WalletOutlined style={{ color: '#2f54eb' }} />}
+            tint="#eef3ff"
+          />
+        </Col>
+        <Col xs={24} sm={12} xl={{ flex: "1 1 0" }}>
+          <KpiTile
+            label="近 7 天成交额"
+            value={money(k.gmv7)}
+            delta={k.gmvGrowth}
+            hint="较前 7 天"
+            icon={<ShoppingCartOutlined style={{ color: '#0f9d58' }} />}
+            tint="#eafaf1"
+          />
+        </Col>
+        <Col xs={24} sm={12} xl={{ flex: "1 1 0" }}>
+          <KpiTile
+            label="近 7 天订单"
+            value={String(k.orders7)}
+            delta={k.ordersGrowth}
+            hint="较前 7 天"
+            icon={<TrophyOutlined style={{ color: '#e08a1e' }} />}
+            tint="#fdf5e7"
+          />
+        </Col>
+        <Col xs={24} sm={12} xl={{ flex: "1 1 0" }}>
+          <KpiTile
+            label="客单价"
+            value={money(k.avgOrderValue)}
+            hint="近 30 天均值"
+            icon={<WalletOutlined style={{ color: '#8a5cff' }} />}
+            tint="#f3efff"
+          />
+        </Col>
+        <Col xs={24} sm={12} xl={{ flex: "1 1 0" }}>
+          <KpiTile
+            label="会员总数"
+            value={compact(k.memberTotal)}
+            hint={`新增 ${k.memberNew7}`}
+            icon={<TeamOutlined style={{ color: '#0c8ce9' }} />}
+            tint="#e9f6fe"
+          />
+        </Col>
+      </Row>
 
-      <Row gutter={[16, 16]}>
+      <Row gutter={[12, 12]}>
         <Col xs={24} xl={16}>
           <Card
             className="soft-card"
             bordered={false}
             title="成交趋势"
-            extra={<Typography.Text type="secondary" style={{ fontSize: 12 }}>近 14 天</Typography.Text>}
+            extra={
+              <Segmented
+                size="small"
+                value={trendRange}
+                onChange={(value) => setTrendRange(value as '7' | '14')}
+                options={[
+                  { label: '近 7 天', value: '7' },
+                  { label: '近 14 天', value: '14' },
+                ]}
+              />
+            }
           >
-            <TrendChart series={data.trend} secondary={data.memberTrend} />
+            <TrendChart series={trendSlice} secondary={memberSlice} />
           </Card>
         </Col>
 
@@ -330,84 +363,57 @@ export default function DashboardPage() {
         </Col>
 
         <Col xs={24} xl={12}>
-          <Card className="soft-card" bordered={false} title="热销商品 TOP 6">
-            <div style={{ display: 'grid', gap: 10 }}>
-              {data.topProducts.map((p, i) => (
-                <div key={p.name} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <span
-                    style={{
-                      width: 22,
-                      height: 22,
-                      borderRadius: 7,
-                      display: 'grid',
-                      placeItems: 'center',
-                      fontSize: 12,
-                      fontWeight: 650,
-                      background: i < 3 ? '#eef3ff' : '#f5f6fa',
-                      color: i < 3 ? '#2f54eb' : '#8b93a7',
-                    }}
-                  >
-                    {i + 1}
-                  </span>
-                  {p.cover && (
-                    <img
+          <Card className="soft-card" bordered={false} title="热销商品 TOP 6" styles={{ body: { paddingTop: 6 } }}>
+            <List
+              dataSource={data.topProducts}
+              split={false}
+              renderItem={(p, i) => (
+                <List.Item style={{ padding: '9px 0' }}>
+                  <Flex align="center" gap={12} style={{ width: '100%', minWidth: 0 }}>
+                    <span className={`rank-badge ${i < 3 ? 'top' : ''}`}>{i + 1}</span>
+                    <Avatar
+                      shape="square"
+                      size={36}
                       src={p.cover}
-                      alt=""
-                      style={{ width: 36, height: 36, borderRadius: 8, objectFit: 'cover', background: '#f2f4f8' }}
+                      style={{ borderRadius: 8, background: '#f2f4f8', flexShrink: 0 }}
                     />
-                  )}
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div
-                      style={{
-                        fontSize: 13.5,
-                        fontWeight: 500,
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                      }}
-                    >
-                      {p.name}
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div className="ellipsis" style={{ fontSize: 13.5, fontWeight: 500 }}>{p.name}</div>
+                      <Text type="secondary" style={{ fontSize: 12 }}>
+                        销量 {p.sales} · {money(Number(p.price))}
+                      </Text>
                     </div>
-                    <div className="muted">销量 {p.sales} · {money(Number(p.price))}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
+                  </Flex>
+                </List.Item>
+              )}
+            />
           </Card>
         </Col>
 
         <Col xs={24} xl={12}>
-          <Card className="soft-card" bordered={false} title="高价值会员">
-            <div style={{ display: 'grid', gap: 12 }}>
-              {data.topBuyers.map((b, i) => (
-                <div key={`${b.nickname}-${i}`} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <div
-                    style={{
-                      width: 34,
-                      height: 34,
-                      borderRadius: 999,
-                      display: 'grid',
-                      placeItems: 'center',
-                      background: '#f3efff',
-                      color: '#7a4ce0',
-                      fontWeight: 600,
-                      fontSize: 13,
-                    }}
-                  >
-                    {(b.nickname ?? '客').slice(0, 1)}
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 13.5, fontWeight: 500 }}>{b.nickname}</div>
-                    <div className="muted">{b.orders} 笔订单</div>
-                  </div>
-                  <span className="money">{money(Number(b.amount))}</span>
-                </div>
-              ))}
-              {!data.topBuyers.length && <Empty description="暂无数据" image={Empty.PRESENTED_IMAGE_SIMPLE} />}
-            </div>
+          <Card className="soft-card" bordered={false} title="高价值会员" styles={{ body: { paddingTop: 6 } }}>
+            <List
+              dataSource={data.topBuyers}
+              split={false}
+              locale={{ emptyText: <Empty description="暂无数据" image={Empty.PRESENTED_IMAGE_SIMPLE} /> }}
+              renderItem={(b, i) => (
+                <List.Item style={{ padding: '9px 0' }}>
+                  <Flex align="center" gap={12} style={{ width: '100%', minWidth: 0 }}>
+                    <Avatar size={34} style={{ background: '#f3efff', color: '#7a4ce0', fontWeight: 600 }}>
+                      {(b.nickname ?? '客').slice(0, 1)}
+                    </Avatar>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 13.5, fontWeight: 500 }}>{b.nickname}</div>
+                      <Text type="secondary" style={{ fontSize: 12 }}>{b.orders} 笔订单</Text>
+                    </div>
+                    <Text strong style={{ fontVariantNumeric: 'tabular-nums' }}>{money(Number(b.amount))}</Text>
+                  </Flex>
+                </List.Item>
+              )}
+            />
           </Card>
         </Col>
       </Row>
-    </div>
+    </Flex>
   );
 }

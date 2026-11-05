@@ -19,6 +19,7 @@ import {
 } from 'antd';
 import { ArrowLeftOutlined, DeleteOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons';
 import { api, withToast } from '@/api/client';
+import { PageHeader } from '@/components/PageHeader';
 import type { Brand, Category, Product, Sku, Spec } from '@/types';
 
 interface FormValues {
@@ -182,23 +183,28 @@ export default function ProductEditPage() {
 
   return (
     <div>
-      <div className="page-head">
-        <div>
-          <Space align="center" size={12}>
-            <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/products')} />
-            <h1 style={{ margin: 0 }}>{isEdit ? '编辑商品' : '新增商品'}</h1>
+      <PageHeader
+        title={
+          <Space align="center" size={10}>
+            <Button
+              icon={<ArrowLeftOutlined />}
+              size="small"
+              onClick={() => navigate('/products')}
+              aria-label="返回商品列表"
+            />
+            <span>{isEdit ? '编辑商品' : '新增商品'}</span>
           </Space>
-          <div className="sub" style={{ marginTop: 6 }}>
-            填写商品基础信息、规格矩阵与库存
-          </div>
-        </div>
-        <Space>
-          <Button onClick={() => navigate('/products')}>取消</Button>
-          <Button type="primary" loading={saving} onClick={submit}>
-            保存商品
-          </Button>
-        </Space>
-      </div>
+        }
+        description="填写商品基础信息、规格矩阵与库存"
+        extra={
+          <>
+            <Button onClick={() => navigate('/products')}>取消</Button>
+            <Button type="primary" loading={saving} onClick={submit}>
+              保存商品
+            </Button>
+          </>
+        }
+      />
 
       <Form form={form} layout="vertical" disabled={loading} initialValues={{ status: true, sort: 0, unit: '件' }}>
         <Row gutter={[16, 16]}>

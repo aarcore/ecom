@@ -15,6 +15,7 @@ import {
 } from 'antd';
 import { EditOutlined, PlusOutlined, ReloadOutlined } from '@ant-design/icons';
 import { api, withToast } from '@/api/client';
+import { PageHeader } from '@/components/PageHeader';
 import type { Notice } from '@/types';
 
 export default function NoticePage() {
@@ -70,20 +71,20 @@ export default function NoticePage() {
 
   return (
     <div>
-      <div className="page-head">
-        <div>
-          <h1>公告管理</h1>
-          <div className="sub">首页滚动公告，用于活动说明与物流提示</div>
-        </div>
-        <Space>
-          <Button icon={<ReloadOutlined />} onClick={load}>
-            刷新
-          </Button>
-          <Button type="primary" icon={<PlusOutlined />} onClick={() => openModal()}>
-            发布公告
-          </Button>
-        </Space>
-      </div>
+      <PageHeader
+        title="公告管理"
+        description="首页滚动公告，用于活动说明与物流提示"
+        extra={
+    <>
+      <Button icon={<ReloadOutlined />} onClick={load}>
+                  刷新
+                </Button>
+                <Button type="primary" icon={<PlusOutlined />} onClick={() => openModal()}>
+                  发布公告
+                </Button>
+    </>
+        }
+      />
 
       <Card className="soft-card" bordered={false}>
         <Table<Notice>

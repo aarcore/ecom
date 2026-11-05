@@ -15,6 +15,7 @@ import {
 } from 'antd';
 import { EditOutlined, PlusOutlined, ReloadOutlined } from '@ant-design/icons';
 import { api, withToast } from '@/api/client';
+import { PageHeader } from '@/components/PageHeader';
 import type { Category } from '@/types';
 
 export default function CategoryPage() {
@@ -81,20 +82,20 @@ export default function CategoryPage() {
 
   return (
     <div>
-      <div className="page-head">
-        <div>
-          <h1>商品分类</h1>
-          <div className="sub">两级分类树，前台分类页与筛选面板共用</div>
-        </div>
-        <Space>
-          <Button icon={<ReloadOutlined />} onClick={load}>
-            刷新
-          </Button>
-          <Button type="primary" icon={<PlusOutlined />} onClick={() => openModal()}>
-            新增一级分类
-          </Button>
-        </Space>
-      </div>
+      <PageHeader
+        title="商品分类"
+        description="两级分类树，前台分类页与筛选面板共用"
+        extra={
+    <>
+      <Button icon={<ReloadOutlined />} onClick={load}>
+                  刷新
+                </Button>
+                <Button type="primary" icon={<PlusOutlined />} onClick={() => openModal()}>
+                  新增一级分类
+                </Button>
+    </>
+        }
+      />
 
       <Card className="soft-card" bordered={false}>
         <Table<Category>

@@ -2,7 +2,6 @@ import { useCallback, useEffect, useState } from 'react';
 import {
   Avatar,
   Button,
-  Card,
   Descriptions,
   Drawer,
   Input,
@@ -18,6 +17,7 @@ import {
 import { ReloadOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { api, withToast, type PageResult } from '@/api/client';
+import { FilterBar, PageHeader, TableCard } from '@/components/PageHeader';
 import type { Member } from '@/types';
 
 const money = (n?: number) => `¥${Number(n ?? 0).toFixed(2)}`;
@@ -73,56 +73,60 @@ export default function MemberListPage() {
 
   return (
     <div>
-      <div className="page-head">
-        <div>
-          <h1>会员管理</h1>
-          <div className="sub">会员等级由累计消费自动升级，支持按来源与状态筛选</div>
-        </div>
-        <Button icon={<ReloadOutlined />} onClick={load}>
-          刷新
-        </Button>
-      </div>
+      <PageHeader
+        title="会员管理"
+        description="会员等级由累计消费自动升级，支持按来源与状态筛选"
+        extra={
+          <Button icon={<ReloadOutlined />} onClick={load}>
+            刷新
+          </Button>
+        }
+      />
 
-      <Card className="soft-card" bordered={false}>
-        <div className="toolbar" style={{ justifyContent: 'space-between' }}>
-          <Segmented
-            options={[
-              { label: '全部', value: 'all' },
-              { label: '正常', value: '1' },
-              { label: '已禁用', value: '0' },
-            ]}
-            value={statusTab}
-            onChange={(value) => {
-              setPage(1);
-              setStatusTab(String(value));
-            }}
-          />
-          <Space>
-            <Input.Search
-              allowClear
-              placeholder="昵称 / 手机号"
-              style={{ width: 220 }}
-              onSearch={(value) => {
-                setPage(1);
-                setKeyword(value);
-              }}
-            />
-            <Select
-              allowClear
-              placeholder="注册来源"
-              style={{ width: 130 }}
-              value={platform}
+      <TableCard>
+        <FilterBar
+          left={
+            <Segmented
+              options={[
+                { label: '全部', value: 'all' },
+                { label: '正常', value: '1' },
+                { label: '已禁用', value: '0' },
+              ]}
+              value={statusTab}
               onChange={(value) => {
                 setPage(1);
-                setPlatform(value);
+                setStatusTab(String(value));
               }}
-              options={[
-                { value: 'web', label: 'H5 / 网页' },
-                { value: 'mp', label: '微信小程序' },
-              ]}
             />
-          </Space>
-        </div>
+          }
+          right={
+            <Space>
+              <Input.Search
+                allowClear
+                placeholder="昵称 / 手机号"
+                style={{ width: 220 }}
+                onSearch={(value) => {
+                  setPage(1);
+                  setKeyword(value);
+                }}
+              />
+              <Select
+                allowClear
+                placeholder="注册来源"
+                style={{ width: 130 }}
+                value={platform}
+                onChange={(value) => {
+                  setPage(1);
+                  setPlatform(value);
+                }}
+                options={[
+                  { value: 'web', label: 'H5 / 网页' },
+                  { value: 'mp', label: '微信小程序' },
+                ]}
+              />
+            </Space>
+          }
+        />
 
         <Table<Member>
           rowKey="id"
@@ -224,7 +228,7 @@ export default function MemberListPage() {
             },
           ]}
         />
-      </Card>
+      </TableCard>
 
       <Drawer
         open={Boolean(detail)}

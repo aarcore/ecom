@@ -17,6 +17,7 @@ import {
 } from 'antd';
 import { PlusOutlined, ReloadOutlined } from '@ant-design/icons';
 import { api, withToast } from '@/api/client';
+import { PageHeader } from '@/components/PageHeader';
 import type { Coupon } from '@/types';
 
 const money = (n?: number) => `¥${Number(n ?? 0).toFixed(2)}`;
@@ -79,20 +80,20 @@ export default function CouponPage() {
 
   return (
     <div>
-      <div className="page-head">
-        <div>
-          <h1>优惠券</h1>
-          <div className="sub">满减与折扣模板，会员在个人中心或结算页领取</div>
-        </div>
-        <Space>
-          <Button icon={<ReloadOutlined />} onClick={load}>
-            刷新
-          </Button>
-          <Button type="primary" icon={<PlusOutlined />} onClick={() => openModal()}>
-            新建优惠券
-          </Button>
-        </Space>
-      </div>
+      <PageHeader
+        title="优惠券"
+        description="满减与折扣模板，会员在个人中心或结算页领取"
+        extra={
+    <>
+      <Button icon={<ReloadOutlined />} onClick={load}>
+                  刷新
+                </Button>
+                <Button type="primary" icon={<PlusOutlined />} onClick={() => openModal()}>
+                  新建优惠券
+                </Button>
+    </>
+        }
+      />
 
       <div
         style={{

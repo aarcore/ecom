@@ -2,7 +2,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Button,
-  Card,
   Image,
   Input,
   Popconfirm,
@@ -17,6 +16,7 @@ import {
 } from 'antd';
 import { EditOutlined, PlusOutlined, ReloadOutlined } from '@ant-design/icons';
 import { api, withToast, type PageResult } from '@/api/client';
+import { FilterBar, PageHeader, TableCard } from '@/components/PageHeader';
 import type { Category, Product } from '@/types';
 
 const money = (n: number) => `¥${Number(n).toFixed(2)}`;
@@ -80,23 +80,25 @@ export default function ProductListPage() {
 
   return (
     <div>
-      <div className="page-head">
-        <div>
-          <h1>商品列表</h1>
-          <div className="sub">管理 SPU、SKU、库存与上下架状态</div>
-        </div>
-        <Space>
-          <Button icon={<ReloadOutlined />} onClick={load}>
-            刷新
-          </Button>
-          <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/products/new')}>
-            新增商品
-          </Button>
-        </Space>
-      </div>
+      <PageHeader
+        title="商品列表"
+        description="管理 SPU、SKU、库存与上下架状态"
+        extra={
+          <>
+            <Button icon={<ReloadOutlined />} onClick={load}>
+              刷新
+            </Button>
+            <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/products/new')}>
+              新增商品
+            </Button>
+          </>
+        }
+      />
 
-      <Card className="soft-card" bordered={false}>
-        <div className="toolbar">
+      <TableCard>
+        <FilterBar
+          right={
+            <>
           <Input.Search
             allowClear
             placeholder="搜索商品名称"
@@ -134,7 +136,9 @@ export default function ProductListPage() {
               { value: 0, label: '已下架' },
             ]}
           />
-        </div>
+            </>
+          }
+        />
 
         <Table<Product>
           rowKey="id"
@@ -248,7 +252,7 @@ export default function ProductListPage() {
             },
           ]}
         />
-      </Card>
+      </TableCard>
     </div>
   );
 }

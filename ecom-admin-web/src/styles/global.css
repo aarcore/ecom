@@ -49,39 +49,11 @@ body {
 }
 
 /* ---------- page chrome ---------- */
-.page-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
-  margin-bottom: 16px;
-}
-
-.page-head h1 {
-  font-size: 19px;
-  font-weight: 650;
-  letter-spacing: -0.012em;
-  line-height: 1.3;
-  margin: 0;
-}
-
-.page-head .sub {
-  color: var(--ink-soft);
-  font-size: 12.5px;
-  line-height: 1.6;
-  margin-top: 3px;
-  max-width: 68ch;
-}
-
-.toolbar {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-bottom: 16px;
-}
-
+/*
+ * Headings and filter rows are now components (components/PageHeader.tsx) so
+ * the spacing lives in one place. Only the card shell is styled here, because
+ * it is applied through `className` on AntD's Card.
+ */
 .soft-card {
   background: var(--surface);
   border-radius: var(--radius);
@@ -102,65 +74,76 @@ body {
   border-bottom-color: var(--line);
 }
 
-/* ---------- KPI tiles ---------- */
-.kpi-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(196px, 1fr));
-  gap: 12px;
-}
+/* ---------- dashboard ---------- */
 
-.kpi-tile {
-  position: relative;
-  overflow: hidden;
-  background: var(--surface);
-  border: 1px solid var(--line-strong);
-  border-radius: var(--radius);
-  padding: 15px 16px 13px;
-  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.03);
-}
-
-.kpi-tile .label {
-  color: var(--ink-soft);
-  font-size: 12.5px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.kpi-tile .value {
-  font-size: 24px;
-  font-weight: 650;
-  letter-spacing: -0.02em;
-  margin-top: 6px;
-  font-variant-numeric: tabular-nums;
-  line-height: 1.2;
-}
-
-.kpi-tile .delta {
-  margin-top: 6px;
-  font-size: 11.5px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.kpi-tile .delta.up {
-  color: #0f9d58;
-}
-.kpi-tile .delta.down {
-  color: #d94848;
-}
-
-.kpi-tile .glyph {
-  position: absolute;
-  right: 13px;
-  top: 13px;
+/* the icon chip that Statistic has no slot for */
+.kpi-glyph {
   width: 30px;
   height: 30px;
   border-radius: 8px;
   display: grid;
   place-items: center;
   font-size: 14px;
+  flex-shrink: 0;
+}
+
+/* ranked position in the top-products list */
+.rank-badge {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  border-radius: 7px;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  font-weight: 650;
+  background: #f5f6fa;
+  color: var(--ink-faint);
+}
+
+.rank-badge.top {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+/* chart tooltip and legend */
+.chart-tip {
+  position: absolute;
+  top: 8px;
+  transform: translateX(-50%);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 12px;
+  box-shadow: 0 8px 24px rgba(16, 24, 40, 0.1);
+  font-size: 12px;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.legend-line {
+  display: inline-block;
+  width: 14px;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.legend-line.solid {
+  height: 3px;
+  border-radius: 2px;
+  background: var(--accent);
+}
+
+.legend-line.dashed {
+  height: 0;
+  border-top: 2px dashed #8a5cff;
+}
+
+/* one-line clamp used by list rows */
+.ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* ---------- table polish ---------- */
@@ -396,20 +379,10 @@ body {
 }
 
 .sider-brand .name {
-  display: flex;
-  align-items: baseline;
-  gap: 6px;
   font-size: 14px;
   font-weight: 650;
   letter-spacing: -0.01em;
   color: var(--ink);
-}
-
-.sider-brand .name em {
-  font-style: normal;
-  font-weight: 400;
-  font-size: 11.5px;
-  color: var(--ink-faint);
 }
 
 /* antd's inline menu adds its own inset; align group titles with item text */

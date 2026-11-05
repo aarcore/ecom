@@ -186,12 +186,7 @@ export default function AppLayout() {
       >
         <div className={`sider-brand ${collapsed ? 'is-collapsed' : ''}`}>
           <span className="mark">E</span>
-          {!collapsed && (
-            <span className="name">
-              Ecom
-              <em>运营台</em>
-            </span>
-          )}
+          {!collapsed && <span className="name">Ecom</span>}
         </div>
 
         <Menu

@@ -17,6 +17,7 @@ import {
 } from 'antd';
 import { EditOutlined, PlusOutlined, ReloadOutlined, UploadOutlined } from '@ant-design/icons';
 import { api, withToast } from '@/api/client';
+import { PageHeader } from '@/components/PageHeader';
 import type { Banner, Category } from '@/types';
 
 export default function BannerPage() {
@@ -79,20 +80,20 @@ export default function BannerPage() {
 
   return (
     <div>
-      <div className="page-head">
-        <div>
-          <h1>轮播图</h1>
-          <div className="sub">首页轮播位，支持跳转商品、分类或外链</div>
-        </div>
-        <Space>
-          <Button icon={<ReloadOutlined />} onClick={load}>
-            刷新
-          </Button>
-          <Button type="primary" icon={<PlusOutlined />} onClick={() => openModal()}>
-            新增轮播
-          </Button>
-        </Space>
-      </div>
+      <PageHeader
+        title="轮播图"
+        description="首页轮播位，支持跳转商品、分类或外链"
+        extra={
+    <>
+      <Button icon={<ReloadOutlined />} onClick={load}>
+                  刷新
+                </Button>
+                <Button type="primary" icon={<PlusOutlined />} onClick={() => openModal()}>
+                  新增轮播
+                </Button>
+    </>
+        }
+      />
 
       <Card className="soft-card" bordered={false}>
         <Table<Banner>

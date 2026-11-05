@@ -16,6 +16,7 @@ import {
 } from 'antd';
 import { EditOutlined, PlusOutlined, ReloadOutlined } from '@ant-design/icons';
 import { api, withToast } from '@/api/client';
+import { PageHeader } from '@/components/PageHeader';
 import type { Brand } from '@/types';
 
 export default function BrandPage() {
@@ -71,20 +72,20 @@ export default function BrandPage() {
 
   return (
     <div>
-      <div className="page-head">
-        <div>
-          <h1>品牌管理</h1>
-          <div className="sub">品牌用于商品归属与前台筛选</div>
-        </div>
-        <Space>
-          <Button icon={<ReloadOutlined />} onClick={load}>
-            刷新
-          </Button>
-          <Button type="primary" icon={<PlusOutlined />} onClick={() => openModal()}>
-            新增品牌
-          </Button>
-        </Space>
-      </div>
+      <PageHeader
+        title="品牌管理"
+        description="品牌用于商品归属与前台筛选"
+        extra={
+    <>
+      <Button icon={<ReloadOutlined />} onClick={load}>
+                  刷新
+                </Button>
+                <Button type="primary" icon={<PlusOutlined />} onClick={() => openModal()}>
+                  新增品牌
+                </Button>
+    </>
+        }
+      />
 
       <Card className="soft-card" bordered={false}>
         <Table<Brand>

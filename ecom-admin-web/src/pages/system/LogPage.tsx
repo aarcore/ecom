@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Button, Card, Input, Table, Tag, Tooltip, message, type TablePaginationConfig } from 'antd';
+import { Button, Input, Table, Tag, Tooltip, message, type TablePaginationConfig } from 'antd';
 import { ReloadOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { api, withToast, type PageResult } from '@/api/client';
+import { FilterBar, PageHeader, TableCard } from '@/components/PageHeader';
 import type { AuditLog } from '@/types';
 
 export default function LogPage() {
@@ -36,28 +37,30 @@ export default function LogPage() {
 
   return (
     <div>
-      <div className="page-head">
-        <div>
-          <h1>操作日志</h1>
-          <div className="sub">由 AOP 切面自动记录每一次运营写操作</div>
-        </div>
-        <Button icon={<ReloadOutlined />} onClick={load}>
-          刷新
-        </Button>
-      </div>
+      <PageHeader
+        title="操作日志"
+        description="由 AOP 切面自动记录每一次运营写操作"
+        extra={
+    <Button icon={<ReloadOutlined />} onClick={load}>
+              刷新
+            </Button>
+        }
+      />
 
-      <Card className="soft-card" bordered={false}>
-        <div className="toolbar">
-          <Input.Search
-            allowClear
-            placeholder="操作人 / 动作 / 接口"
-            style={{ width: 280 }}
-            onSearch={(value) => {
-              setPage(1);
-              setKeyword(value);
-            }}
-          />
-        </div>
+      <TableCard>
+        <FilterBar
+          right={
+            <Input.Search
+              allowClear
+              placeholder="操作人 / 动作 / 接口"
+              style={{ width: 280 }}
+              onSearch={(value) => {
+                setPage(1);
+                setKeyword(value);
+              }}
+            />
+          }
+        />
 
         <Table<AuditLog>
           rowKey="id"
@@ -117,7 +120,7 @@ export default function LogPage() {
             },
           ]}
         />
-      </Card>
+      </TableCard>
     </div>
   );
 }

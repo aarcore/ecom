@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import {
   Button,
-  Card,
   DatePicker,
   Descriptions,
   Divider,
@@ -20,6 +19,7 @@ import {
 import { ReloadOutlined } from '@ant-design/icons';
 import dayjs, { type Dayjs } from 'dayjs';
 import { api, withToast, type PageResult } from '@/api/client';
+import { FilterBar, PageHeader, TableCard } from '@/components/PageHeader';
 import { ORDER_STATUS, type Order } from '@/types';
 
 const money = (n?: number) => `¥${Number(n ?? 0).toFixed(2)}`;
@@ -120,18 +120,19 @@ export default function OrderListPage() {
 
   return (
     <div>
-      <div className="page-head">
-        <div>
-          <h1>订单管理</h1>
-          <div className="sub">发货、备注与退款操作会记录到操作日志</div>
-        </div>
-        <Button icon={<ReloadOutlined />} onClick={load}>
-          刷新
-        </Button>
-      </div>
+      <PageHeader
+        title="订单管理"
+        description="发货、备注与退款操作会记录到操作日志"
+        extra={
+          <Button icon={<ReloadOutlined />} onClick={load}>
+            刷新
+          </Button>
+        }
+      />
 
-      <Card className="soft-card" bordered={false}>
-        <div className="toolbar" style={{ justifyContent: 'space-between' }}>
+      <TableCard>
+        <FilterBar
+          left={
           <Segmented
             options={STATUS_TABS}
             value={statusTab}
@@ -140,6 +141,8 @@ export default function OrderListPage() {
               setStatusTab(String(value));
             }}
           />
+          }
+          right={
           <Space>
             <Input.Search
               allowClear
@@ -172,7 +175,8 @@ export default function OrderListPage() {
               }}
             />
           </Space>
-        </div>
+          }
+        />
 
         <Table<Order>
           rowKey="id"
@@ -281,7 +285,7 @@ export default function OrderListPage() {
             },
           ]}
         />
-      </Card>
+      </TableCard>
 
       {/* ------------------------- detail drawer ------------------------- */}
       <Drawer
