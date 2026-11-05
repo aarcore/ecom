@@ -1,29 +1,47 @@
-# Ecom · 单体电商系统
+<div align="center">
 
-一套 Spring Boot 单体服务同时支撑 **PC Web 商城**、**H5 / 微信小程序** 与 **运营后台**，配套可插拔的第三方支付网关。全栈由 Docker Compose 一键拉起：**PostgreSQL**、**Redis**、**Spring Boot 服务** 与三个 **Nginx 静态站点**。
+# Ecom
 
-```
-┌───────────────┐ ┌───────────────┐ ┌──────────────────┐
-│ecom-admin-web │ │ ecom-app-web  │ │  ecom-app-mini   │
-│React + AntD   │ │  React (PC)   │ │ React (H5/小程序) │
-└──────┬────────┘ └──────┬────────┘ └────────┬─────────┘
-       │  /api           │  /api            │  /api
-       └─────────────────┼──────────────────┘
-                         ▼
-        ┌────────────────────────────────┐
-        │      ecom-boot（单体入口）      │  Spring Boot 2.7 / JDK 17
-        │   /api/admin/**  /api/app/**   │
-        └───┬──────────┬─────────────┬───┘
-            │          │             │
-      ┌─────▼────┐ ┌───▼─────┐ ┌─────▼──────────┐
-      │PostgreSQL│ │  Redis  │ │  ecom-pay      │
-      │  (数据)   │ │(缓存/限流)│ │ Stripe/微信/支付宝│
-      └──────────┘ └─────────┘ └────────────────┘
-```
+可插拔支付网关的单体电商系统
+
+桌面前台 · 移动 H5 · 运营后台 · Stripe / 微信支付 / 支付宝
+
+[![License](https://img.shields.io/badge/license-MIT-yellow.svg)](LICENSE)
+[![Version](https://img.shields.io/badge/version-1.0.0-orange.svg)](https://github.com/aarcore/ecom/releases)
+[![Java](https://img.shields.io/badge/runtime-JDK%2017-blue.svg)](https://adoptium.net/)
+[![Spring Boot](https://img.shields.io/badge/spring%20boot-2.7.13-6db33f.svg)](https://spring.io/projects/spring-boot)
+[![PostgreSQL](https://img.shields.io/badge/database-PostgreSQL%2016-4169e1.svg)](https://www.postgresql.org/)
+[![Stack](https://img.shields.io/badge/stack-Spring%20%7C%20React%20%7C%20TypeScript-000000.svg)](#技术栈)
+
+</div>
 
 ---
 
-## 1. 快速开始（Docker）
+Ecom 是一个 Spring Boot 服务，同时支撑三套前端。顾客在桌面前台挑车，在能被小程序 webview 直接加载的 H5 页面上下单，运营在同一批订单上发货。整套系统是一个可部署的 jar 加每个客户端一份静态包，因此本地跑通的下单链路与线上走的是同一份代码。
+
+真正花心思的是支付层。渠道是数据库里的一行记录，不是配置文件：运营在后台粘贴 Stripe 密钥、打开开关，下次加载页面商城就开始提供这个渠道——不用重新部署，不用重启。新增一家支付只需要一个类加一行数据。
+
+没有独立的认证服务，没有消息队列，也不拆微服务。状态放在 PostgreSQL，可重建的放 Redis，过期订单交给 `@Scheduled` 关闭。
+
+---
+
+## 目录
+
+- [快速开始（Docker）](#快速开始docker)
+- [本地开发](#本地开发)
+- [模块结构](#模块结构)
+- [关键设计](#关键设计)
+- [数据库与迁移](#数据库与迁移)
+- [功能清单](#功能清单)
+- [测试](#测试)
+- [生产部署注意事项](#生产部署注意事项)
+- [技术栈](#技术栈)
+- [License](#license)
+
+---
+
+## 快速开始（Docker）
+
 
 ```bash
 cp .env.example .env       # 可选：脚本会自动创建
@@ -63,7 +81,7 @@ docker compose down -v            # 停止并清空数据（重建演示库）
 
 ---
 
-## 2. 本地开发
+## 本地开发
 
 ```bash
 ./scripts/dev.sh      # 仅启动 PostgreSQL + Redis
@@ -106,7 +124,26 @@ docker cp dist/. ecom-admin-web-id:/usr/share/nginx/html/   # 或 ecom-app-web /
 
 ---
 
-## 3. 模块结构
+## 模块结构
+
+```
+┌───────────────┐ ┌───────────────┐ ┌──────────────────┐
+│ecom-admin-web │ │ ecom-app-web  │ │  ecom-app-mini   │
+│React + AntD   │ │  React (PC)   │ │ React (H5/小程序) │
+└──────┬────────┘ └──────┬────────┘ └────────┬─────────┘
+       │  /api           │  /api            │  /api
+       └─────────────────┼──────────────────┘
+                         ▼
+        ┌────────────────────────────────┐
+        │      ecom-boot（单体入口）      │  Spring Boot 2.7 / JDK 17
+        │   /api/admin/**  /api/app/**   │
+        └───┬──────────┬─────────────┬───┘
+            │          │             │
+      ┌─────▼────┐ ┌───▼─────┐ ┌─────▼──────────┐
+      │PostgreSQL│ │  Redis  │ │  ecom-pay      │
+      │  (数据)   │ │(缓存/限流)│ │ Stripe/微信/支付宝│
+      └──────────┘ └─────────┘ └────────────────┘
+```
 
 ```
 ecom/
@@ -136,9 +173,9 @@ ecom/
 
 ---
 
-## 4. 关键设计
+## 关键设计
 
-### 4.1 双端鉴权，Token 不互通
+### 1. 双端鉴权，Token 不互通
 
 同一套 JWT 实现签发两种 audience：
 
@@ -149,7 +186,7 @@ ecom/
 
 `JwtAuthInterceptor` 在 MVC 层校验，而不是 Spring Security 过滤器链，原因是**小程序常把 token 放在 query 参数**而非 header。把 C 端 token 拿去访问 `/api/admin/**` 会被拒绝（冒烟测试覆盖了这一点）。
 
-### 4.2 库存不超卖
+### 2. 库存不超卖
 
 下单时对每个 SKU 执行带条件的原子更新：
 
@@ -161,7 +198,7 @@ update shop_product_sku
 
 影响行数为 0 即代表库存不足，直接抛业务异常回滚整个事务。避免了「先查再写」在并发下的经典超卖问题。
 
-### 4.3 价格与优惠一致
+### 3. 价格与优惠一致
 
 结算预览 (`/orders/preview`) 与真正下单 (`POST /orders`) 共用 `CouponCalculator`：
 
@@ -172,7 +209,7 @@ update shop_product_sku
 
 预览金额与实付金额因此始终一致（冒烟测试校验了 ¥7998 − ¥20 = ¥7978）。
 
-### 4.4 订单状态机
+### 4. 订单状态机
 
 ```
 待付款 ──支付──▶ 待发货 ──发货──▶ 待收货 ──确认──▶ 已完成
@@ -186,7 +223,7 @@ update shop_product_sku
 - 每小时将发货超过 7 天的订单自动确认收货
 - 两个任务都是幂等的，多实例部署安全
 
-### 4.5 支付网关
+### 5. 支付网关
 
 `ecom-pay` 把「渠道」抽象为 `PayChannel` 接口，订单流程只与 `PayGateway` 对话：
 
@@ -215,13 +252,13 @@ OrderServiceImpl ──▶ PayGateway ──▶ PayChannelRegistry ──▶ Pay
 
 **不在浏览器回跳时标记成功。** 回跳 URL 由用户控制，`?result=success` 可以伪造；只有验签过的回调才结算订单。
 
-### 4.6 小程序登录
+### 6. 小程序登录
 
 `POST /api/app/auth/login/mp` 接收 `wx.login()` 的 code。演示环境未配置 AppID 时，服务端从 code 派生一个稳定的伪 openid，因此整条流程可测；配置 `WECHAT_APP_ID` / `WECHAT_APP_SECRET` 后可接入真实 `jscode2session`。
 
 C 端 H5 也能被小程序直接加载（`nginx` 已透传 `X-Client-Platform`，前端通过 `?token=` 吸收宿主 token），订单因此能区分来源（`web` / `mp`）。
 
-### 4.7 文件存储
+### 7. 文件存储
 
 默认写本地磁盘（`ecom-uploads` 卷，nginx 以 `/uploads` 提供）。改为对象存储只需：
 
@@ -235,7 +272,7 @@ S3_SECRET_KEY=...
 
 AWS S3 / MinIO / 阿里云 OSS 的 S3 网关均可，业务代码无需改动。
 
-### 4.8 双主题图片
+### 8. 双主题图片
 
 PC 商城有浅色 / 深色两套主题，照片也跟着换：同一件商品在深色下是暗调棚拍，在浅色下是白底高调棚拍。
 
@@ -248,7 +285,7 @@ PC 商城有浅色 / 深色两套主题，照片也跟着换：同一件商品�
 
 `src/components/Photo.tsx` 负责这套映射：主题为 light 时改写路径，图片 404 时自动回退到深色原图，所以某个商品缺浅色图也不会白屏。新增图片时把浅色版放进对应的 `light/` 目录即可，无需改代码。
 
-### 4.9 多语言
+### 9. 多语言
 
 PC 商城支持简体中文 / English / 日本語，默认跟随浏览器语言，可通过头部地球图标切换并记忆到 `localStorage`。
 
@@ -266,7 +303,7 @@ PC 商城支持简体中文 / English / 日本語，默认跟随浏览器语言�
 
 ---
 
-## 5. 数据库与迁移
+## 数据库与迁移
 
 所有表结构由 Flyway 托管，位于 `ecom-boot/src/main/resources/db/migration/`：
 
@@ -304,7 +341,7 @@ docker compose down -v && docker compose up -d
 
 ---
 
-## 6. 功能清单
+## 功能清单
 
 **运营后台**（`ecom-admin-web`）
 
@@ -344,7 +381,7 @@ docker compose down -v && docker compose up -d
 
 ---
 
-## 7. 测试
+## 测试
 
 ```bash
 # 端到端接口冒烟测试（覆盖完整购买链路 + 权限隔离）
@@ -355,7 +392,7 @@ python3 scripts/smoke_test.py http://localhost:8080
 
 ---
 
-## 8. 生产部署注意事项
+## 生产部署注意事项
 
 1. **务必覆盖密钥**：`JWT_SECRET`（≥32 字符）、`DB_PASSWORD`、`REDIS_PASSWORD`。`deploy.sh` 首次运行会自动生成随机 `JWT_SECRET`。
 2. **支付主密钥**：`ECOM_PAY_SECRET`（≥16 字符）用于加密渠道凭据。**未设置时凭据会明文落库**，启动日志会告警。轮换它需要重新录入全部渠道密钥。
@@ -370,7 +407,7 @@ python3 scripts/smoke_test.py http://localhost:8080
 
 ---
 
-## 9. 技术栈
+## 技术栈
 
 | 层 | 选型 |
 | --- | --- |
