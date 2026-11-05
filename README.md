@@ -9,8 +9,10 @@
 [![License](https://img.shields.io/badge/license-MIT-yellow.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/version-1.0.0-orange.svg)](https://github.com/aarcore/ecom/releases)
 [![Java](https://img.shields.io/badge/runtime-JDK%2017-blue.svg)](https://adoptium.net/)
+
 [![Spring Boot](https://img.shields.io/badge/spring%20boot-2.7.13-6db33f.svg)](https://spring.io/projects/spring-boot)
 [![PostgreSQL](https://img.shields.io/badge/database-PostgreSQL%2016-4169e1.svg)](https://www.postgresql.org/)
+[![Redis](https://img.shields.io/badge/cache-Redis%207-dc382d.svg)](https://redis.io/)
 [![Stack](https://img.shields.io/badge/stack-Spring%20%7C%20React%20%7C%20TypeScript-000000.svg)](#技术栈)
 
 </div>
