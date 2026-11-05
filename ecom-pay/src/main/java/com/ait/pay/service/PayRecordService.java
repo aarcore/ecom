@@ -35,9 +35,6 @@ public interface PayRecordService {
      */
     boolean markPaid(PayNotification notification);
 
-    /** Marks the newest pending attempt for an order as failed. */
-    void markFailed(String orderNo, String reason);
-
     /**
      * True when this channel transaction has already been settled. The unique
      * index on (channel_code, trade_no) is the real guard; this is the cheap

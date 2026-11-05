@@ -74,14 +74,6 @@ public class PayRecordServiceImpl implements PayRecordService {
     }
 
     @Override
-    public void markFailed(String orderNo, String reason) {
-        int updated = mapper.failPending(orderNo, truncate(reason));
-        if (updated > 0) {
-            log.info("payment attempt marked failed order={} reason={}", orderNo, reason);
-        }
-    }
-
-    @Override
     public boolean alreadySettled(String channelCode, String tradeNo) {
         return mapper.countSettled(channelCode, tradeNo) > 0;
     }

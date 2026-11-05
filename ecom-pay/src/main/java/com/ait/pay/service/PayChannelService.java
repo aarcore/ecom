@@ -57,13 +57,6 @@ public interface PayChannelService {
     void delete(String code);
 
     /**
-     * Stores the URLs the channel will be called back on. Separated from
-     * {@link #save} because they are derived from the deployment host rather
-     * than typed by an operator.
-     */
-    void applyCallbackUrls(String code, String notifyUrl, String returnUrl);
-
-    /**
      * A view model: everything an operator needs to see, nothing they should
      * not. Secrets appear only as {@code hasPrivateKey} style booleans.
      */

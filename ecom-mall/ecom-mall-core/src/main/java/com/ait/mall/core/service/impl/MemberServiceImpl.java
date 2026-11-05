@@ -5,7 +5,6 @@ import com.ait.common.api.ResultCode;
 import com.ait.common.constant.CommonConstants;
 import com.ait.common.exception.BizException;
 import com.ait.common.security.JwtTokenProvider;
-import com.ait.common.security.LoginUser;
 import com.ait.mall.common.enums.ClientPlatform;
 import com.ait.mall.core.dto.AppLoginRequest;
 import com.ait.mall.core.dto.LoginResult;
@@ -124,15 +123,6 @@ public class MemberServiceImpl implements MemberService {
         LoginResult result = finishLogin(member);
         result.setNewAccount(created);
         return result;
-    }
-
-    @Override
-    public LoginResult profileLogin(Long memberId) {
-        Member member = memberMapper.selectById(memberId);
-        if (member == null) {
-            throw new BizException(ResultCode.ACCOUNT_NOT_FOUND);
-        }
-        return finishLogin(member);
     }
 
     @Override

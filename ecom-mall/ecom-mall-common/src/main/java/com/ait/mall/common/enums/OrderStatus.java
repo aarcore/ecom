@@ -43,13 +43,4 @@ public enum OrderStatus {
                 .findFirst()
                 .orElse(null);
     }
-
-    public boolean isTerminal() {
-        return this == COMPLETED || this == CANCELLED || this == REFUNDED;
-    }
-
-    /** Paid states that count towards GMV. */
-    public boolean isRevenue() {
-        return this == PENDING_SHIPMENT || this == SHIPPED || this == COMPLETED;
-    }
 }

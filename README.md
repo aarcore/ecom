@@ -36,6 +36,7 @@ Ecom 是一个 Spring Boot 服务，同时支撑三套前端。顾客在桌面�
 - [数据库与迁移](#数据库与迁移)
 - [功能清单](#功能清单)
 - [测试](#测试)
+- [文档索引](#文档索引)
 - [生产部署注意事项](#生产部署注意事项)
 - [技术栈](#技术栈)
 - [License](#license)
@@ -394,6 +395,17 @@ python3 scripts/smoke_test.py http://localhost:8080
 
 ---
 
+## 文档索引
+
+| 文档 | 内容 |
+| --- | --- |
+| [ARCHITECTURE.md](docs/ARCHITECTURE.md) | 模块划分、依赖方向、请求链路、支付与多语言子系统、数据模型、已知约束 |
+| [FEATURES.md](docs/FEATURES.md) | 三端功能逐项说明、业务规则、演示账号与数据规模 |
+| [API.md](docs/API.md) | 接口约定、鉴权方式、响应信封 |
+| [DEPLOYMENT.md](docs/DEPLOYMENT.md) | 镜像构成、构建耗时、生产环境注意事项 |
+
+---
+
 ## 生产部署注意事项
 
 1. **务必覆盖密钥**：`JWT_SECRET`（≥32 字符）、`DB_PASSWORD`、`REDIS_PASSWORD`。`deploy.sh` 首次运行会自动生成随机 `JWT_SECRET`。
@@ -406,6 +418,8 @@ python3 scripts/smoke_test.py http://localhost:8080
 8. **上传目录**：多实例部署时把 `ecom-uploads` 卷换成共享存储，或切换到 S3。
 9. **备份**：定期 `pg_dump`；Redis 仅承载可重建的缓存与限流数据，无需强一致备份。
 10. **定时任务**：订单超时关闭与自动收货依赖 `@Scheduled`，多实例下幂等但会产生重复日志，如介意可改为分布式锁独占。
+11. **登出不会使 token 失效**：JWT 无状态，`/logout` 仅清客户端状态；黑名单 key 前缀已预留但未实现写入。token 默认有效期 7 天，期间被登出的凭证仍可用。若需要即时失效，在登出时写 `jti` 到 Redis 并在拦截器校验。
+12. **会员等级不会自动升级**：新会员固定 1 级，`level` 目前只是展示字段。
 
 ---
 

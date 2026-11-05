@@ -1,9 +1,7 @@
 package com.ait.mall.core.query;
 
 import com.ait.annotation.Query;
-import com.ait.common.web.param.OrderQueryParam;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * Admin product search. Declared with {@link Query} annotations so the
@@ -15,8 +13,7 @@ import lombok.EqualsAndHashCode;
  * they paste a term into the search box.
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class AdminProductQuery extends OrderQueryParam {
+public class AdminProductQuery {
 
     private static final long serialVersionUID = 1L;
 
