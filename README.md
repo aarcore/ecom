@@ -50,10 +50,49 @@ Ecom 是一个 Spring Boot 服务，同时支撑三套前端。顾客在桌面�
 
 ---
 
+## 界面预览
+
+截图取自本仓库默认种子数据，`docker compose up -d` 后即可复现。
+
+### 桌面前台（`ecom-app-web`）
+
+![首页](docs/images/home.jpg)
+
+首屏是不带卡片的整幅轮播，右侧竖排 tablist 可以点击与键盘切换；文案进场做了逐行错位，切换轮播时不会只是静默淡入淡出。
+
+| 商品列表 | 商品详情 |
+| --- | --- |
+| ![商品列表](docs/images/shop.png) | ![商品详情](docs/images/product.png) |
+
+列表页把品类树、价格区间、排序收在左侧一列，右侧保持四列网格；详情页的尺码与颜色是真实 SKU 维度，选中后才解析出对应的库存与价格。
+
+| 购物车 | 结算 |
+| --- | --- |
+| ![购物车](docs/images/cart-dark.png) | ![结算](docs/images/checkout-dark.png) |
+
+购物车与结算这两张取的是深色主题。结算页的支付方式是运行时从 `shop_pay_channel` 读出来的，运营停用某个渠道后这里就不再出现。
+
+### 深色主题与多语言
+
+| 深色主题 | English |
+| --- | --- |
+| ![深色主题](docs/images/shop-dark.png) | ![English](docs/images/home-en.jpg) |
+
+主题与语言都只存在 `localStorage`，刷新与跨页面跳转保持不变；接口层的语言由 `LocaleFilter` 按 `?lang=` → `X-Lang` → `Accept-Language` 协商，商品标题与详情也会跟着切换。
+
+### 运营后台（`ecom-admin-web`）
+
+![运营后台数据看板](docs/images/admin-dashboard.png)
+
+看板聚合了成交趋势、品类销量分布、畅销榜与高价值会员，顶栏常驻待发货 / 待付款 / 退款中三个待办计数。
+
+---
+
 ## 目录
 
 - [快速开始（Docker）](#快速开始docker)
 - [可作为跨境独立站的基础](#可作为跨境独立站的基础)
+- [界面预览](#界面预览)
 - [本地开发](#本地开发)
 - [模块结构](#模块结构)
 - [关键设计](#关键设计)
