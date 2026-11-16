@@ -1,7 +1,7 @@
 {
   "name": "ecom-app-web",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.2",
   "type": "module",
   "description": "Ecom customer client for desktop web — full-size layout that gracefully collapses to tablet and mobile",
   "scripts": {

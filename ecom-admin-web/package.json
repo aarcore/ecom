@@ -1,7 +1,7 @@
 {
   "name": "ecom-admin-web",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.2",
   "type": "module",
   "description": "Ecom back-office console — React + Ant Design",
   "scripts": {

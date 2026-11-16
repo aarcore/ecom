@@ -1,7 +1,7 @@
 {
   "name": "ecom-app-mini",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.2",
   "type": "module",
   "description": "Ecom customer client — mobile-first H5 rendered in the WeChat mini program webview, also served on the web",
   "scripts": {
