@@ -7,7 +7,7 @@
 桌面前台 · 移动 H5 · 运营后台 · Stripe / 微信支付 / 支付宝
 
 [![License](https://img.shields.io/badge/license-MIT-yellow.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-1.0.0-orange.svg)](https://github.com/aarcore/ecom/releases)
+[![Version](https://img.shields.io/badge/version-1.0.2-orange.svg)](https://github.com/aarcore/ecom/releases)
 [![Java](https://img.shields.io/badge/runtime-JDK%2017-blue.svg)](https://adoptium.net/)
 
 [![Spring Boot](https://img.shields.io/badge/spring%20boot-2.7.13-6db33f.svg)](https://spring.io/projects/spring-boot)
@@ -132,7 +132,7 @@ cp .env.example .env       # 可选：脚本会自动创建
 
 首次启动会自动执行四个迁移脚本，写入 24 个商品、121 个 SKU、18 位会员、近 30 天的 90 笔订单与英日双语译文，因此看板与列表页开箱即有数据。
 
-> 端口被占用时，在 `.env` 中修改 `API_PORT` / `ADMIN_UI_PORT` / `APP_MINI_PORT` / `APP_WEB_PORT` / `DB_PORT` / `REDIS_PORT` 即可。仓库自带的 `.env` 已经改用 `18080`–`18083` / `15432` / `16379`，避免与本机其他容器冲突。
+> 端口被占用时，在 `.env` 中修改 `API_PORT` / `ADMIN_UI_PORT` / `APP_MINI_PORT` / `APP_WEB_PORT` / `DB_PORT` / `REDIS_PORT` 即可。`.env` 由 `deploy.sh` 首次运行时从 `.env.example` 复制而来，不纳入版本控制；上表是 `.env.example` 的默认值。
 
 ### 常用命令
 
@@ -451,7 +451,8 @@ docker compose down -v && docker compose up -d
 
 ```bash
 # 端到端接口冒烟测试（覆盖完整购买链路 + 权限隔离）
-python3 scripts/smoke_test.py http://localhost:8080
+python3 scripts/smoke_test.py                      # 默认 http://localhost:18080
+python3 scripts/smoke_test.py http://localhost:8080 # 也可显式指定，或用 ECOM_BASE_URL
 ```
 
 会打印一张 24 项的检查表，覆盖浏览、加购、结算、支付、发货、收货、商品增删改、审计日志，以及三类越权访问。

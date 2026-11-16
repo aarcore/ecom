@@ -8,14 +8,19 @@ instance and prints a pass/fail table.
 
 Usage:
     python3 scripts/smoke_test.py [base_url]
-    base_url defaults to http://localhost:8080
+    base_url defaults to $ECOM_BASE_URL, else http://localhost:18080
 """
 import json
+import os
 import sys
 import urllib.error
 import urllib.request
 
-BASE = sys.argv[1] if len(sys.argv) > 1 else "http://localhost:8080"
+BASE = (
+    sys.argv[1]
+    if len(sys.argv) > 1
+    else os.environ.get("ECOM_BASE_URL", "http://localhost:18080")
+)
 
 passed = 0
 failed = 0
