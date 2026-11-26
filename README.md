@@ -528,21 +528,21 @@ python3 scripts/smoke_test.py http://localhost:8080 # 也可显式指定，或�
 
 ## 联系作者
 
-定制需求（分销、结算、多币种、对接现有 ERP 等）或其他技术问题，欢迎通过以下方式联系。加群时请说明来意与大致场景，方便直接切入问题。
+定制需求（分销、结算、多币种、对接现有 ERP 等）或其他技术问题，欢迎扫码联系作者。添加时请说明来意与大致场景，方便直接切入问题。
 
 <div align="center">
 
 <table>
   <tr>
     <td align="center" width="50%">
-      <img src="docs/images/contact-qq.png" alt="QQ 交流群" width="240" />
+      <img src="docs/images/contact-wechat.png" alt="微信" width="220" />
       <br />
-      <sub>QQ 交流群</sub>
+      <sub>微信</sub>
     </td>
     <td align="center" width="50%">
-      <img src="docs/images/contact-feishu.png" alt="飞书交流群" width="240" />
+      <img src="docs/images/contact-feishu.png" alt="飞书" width="220" />
       <br />
-      <sub>飞书交流群</sub>
+      <sub>飞书</sub>
     </td>
   </tr>
 </table>
